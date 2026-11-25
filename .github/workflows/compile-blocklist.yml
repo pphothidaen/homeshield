@@ -1,0 +1,96 @@
+name: Tier 0 CDN Blocklist Pre-Compiler
+
+on:
+  schedule:
+    # Run daily at 23:00 UTC (06:00 AM ICT Bangkok)
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'config/whitelist.txt'
+      - 'config/adblock.conf'
+      - 'rust/crates/core/**'
+      - 'rust/crates/cli/**'
+      - '.github/workflows/compile-blocklist.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Compile pre-whitelisted hosts.txt (Rust CLI)
+        run: |
+          cargo run --release --manifest-path rust/Cargo.toml -p homeshield-cli -- compile --out-dir dist --whitelist config/whitelist.txt --conf config/adblock.conf
+          touch dist/.nojekyll
+          cat << 'EOF' > dist/index.html
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <title>HomeShield Tier 0 CDN</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 680px; margin: 48px auto; padding: 0 20px; line-height: 1.6; color: #1f2328; }
+              code { background: #f6f8fa; padding: 2px 6px; border-radius: 6px; }
+              a { color: #0969da; }
+            </style>
+          </head>
+          <body>
+            <h1>HomeShield — Tier 0 Edge Blocklist CDN</h1>
+            <p>Pre-compiled, pre-whitelisted DNS sinkhole payload updated daily for embedded routers (ZTE, Huawei, ASUS, OpenWrt) and Smart TV/IoT home networks.</p>
+            <ul>
+              <li><a href="./hosts.txt"><code>hosts.txt</code></a> — Canonical IPv4/IPv6-ready blocklist payload</li>
+              <li><a href="./metadata.json"><code>metadata.json</code></a> — Feed health &amp; domain count metadata</li>
+              <li><a href="https://github.com/pphothidaen/homeshield">GitHub Repository</a> — Documentation, Rust daemon, CLI &amp; ADB TV Shield</li>
+            </ul>
+          </body>
+          </html>
+          EOF
+          ls -lh dist/
+
+      - name: Health-check blocklist URLs
+        run: |
+          urls=$(grep '^BLOCKLIST_URLS=' config/adblock.conf | cut -d'"' -f2)
+          for url in $urls; do
+            echo "Checking $url"
+            curl -fsSL --max-time 30 "$url" -o /dev/null || { echo "FAILED $url"; exit 1; }
+          done
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

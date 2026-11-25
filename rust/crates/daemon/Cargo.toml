@@ -1,0 +1,14 @@
+[package]
+name = "homeshield-daemon"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Ultra-lightweight embedded daemon and watchdog for HomeShield on broadband gateways"
+
+[[bin]]
+name = "homeshield-daemon"
+path = "src/main.rs"
+
+[dependencies]
+homeshield-core = { path = "../core" }

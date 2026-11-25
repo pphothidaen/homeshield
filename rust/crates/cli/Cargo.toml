@@ -1,0 +1,25 @@
+[package]
+name = "homeshield-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Unified management CLI and Tier 0 blocklist pre-compiler for HomeShield"
+
+[[bin]]
+name = "homeshield"
+path = "src/main.rs"
+
+[dependencies]
+homeshield-core = { path = "../core" }
+aes = "0.8"
+anyhow = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+clap = { version = "4", features = ["derive", "env"] }
+rand = "0.8"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "time", "process", "signal", "fs", "sync"] }
+url = "2"

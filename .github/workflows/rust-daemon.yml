@@ -1,0 +1,72 @@
+name: Rust Embedded Daemon CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'rust/**'
+      - 'config/**'
+      - 'tests/**'
+      - 'homeshield.py'
+      - 'core/**'
+      - 'scripts/**'
+      - '.github/workflows/rust-daemon.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'rust/**'
+      - 'config/**'
+      - 'tests/**'
+      - 'homeshield.py'
+      - 'core/**'
+      - 'scripts/**'
+      - '.github/workflows/rust-daemon.yml'
+
+jobs:
+  test-and-cross-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM soft-float cross-compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-linux-gnueabi musl-tools
+
+      - name: Setup Rust with ARMv7 musl soft-float target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: armv7-unknown-linux-musleabi
+          components: clippy, rustfmt
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Check Rust formatting
+        working-directory: rust
+        run: cargo fmt --all -- --check
+
+      - name: Run Rust Clippy (-D warnings)
+        working-directory: rust
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Run Rust unit & integration tests
+        working-directory: rust
+        run: cargo test --workspace
+
+      - name: Cross-compile static ARMv7 binary
+        working-directory: rust
+        env:
+          CARGO_TARGET_ARMV7_UNKNOWN_LINUX_MUSLEABI_LINKER: arm-linux-gnueabi-gcc
+        run: |
+          cargo build --release --target armv7-unknown-linux-musleabi -p homeshield-daemon
+          ls -lh target/armv7-unknown-linux-musleabi/release/homeshield-daemon
+          file target/armv7-unknown-linux-musleabi/release/homeshield-daemon
+
+      - name: Upload ARMv7 Daemon Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: homeshield-daemon-armv7
+          path: rust/target/armv7-unknown-linux-musleabi/release/homeshield-daemon

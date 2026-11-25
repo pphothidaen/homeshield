@@ -1,0 +1,55 @@
+# HomeShield Local Whitelist
+# Domains explicitly excluded from DNS Sinkholing
+
+# Essential Thai Banking & Payments
+kasikornbank.com
+scb.co.th
+krungthai.com
+bangkokbank.com
+ttbbank.com
+krungsri.com
+
+# Thai Telecommunications & ISPs
+ais.co.th
+myais.ais.co.th
+aisplay.ais.co.th
+play.ais.co.th
+aisfibre.net
+true.th
+trueid.net
+3bb.co.th
+
+# E-Commerce, Logistics & Food Delivery
+shopee.co.th
+s.shopee.co.th
+lazada.co.th
+s.lazada.co.th
+c.lazada.co.th
+grab.com
+lineman.line.me
+
+# Mobile Push Notifications, OS Connectivity & TV App Ecosystems
+apple.com
+icloud.com
+push.apple.com
+captive.apple.com
+time.apple.com
+google.com
+googleapis.com
+gstatic.com
+connectivitycheck.gstatic.com
+clients3.google.com
+android.clients.google.com
+play.googleapis.com
+fcm.googleapis.com
+time.android.com
+time.google.com
+android.com
+microsoft.com
+msftconnecttest.com
+www.msftconnecttest.com
+
+# Anti-Bot & Captcha Services
+recaptcha.net
+hcaptcha.com
+challenges.cloudflare.com

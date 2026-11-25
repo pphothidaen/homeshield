@@ -1,0 +1,20 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/daemon",
+    "crates/cli",
+]
+
+[workspace.package]
+version = "1.2.0"
+edition = "2021"
+license = "MIT"
+authors = ["Pansakorn Phothidaen"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
