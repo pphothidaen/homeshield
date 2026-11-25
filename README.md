@@ -172,6 +172,164 @@ Live testing conducted against the independent [TurtleCute Ad Blocker Test suite
 
 HomeShield employs a **Decoupled, Zero-Hop Edge Architecture**. The router handles network-wide DNS interception with zero hops, while Smart TV debloating runs as an independent companion utility over LAN ADB.
 
+```mermaid
+graph TD
+    %% Tier 0 Cloud Edge
+    subgraph Tier0["Tier 0 Cloud Edge (GitHub Actions)"]
+        T0A["Pre-compiles 29 Live Feeds\n(Ad/Scam/Thai/IoT/PC)"]
+        T0B["Deduplicates 285,865+ domains\n& applies Whitelist"]
+        T0C["Publishes daily to Tier 0 CDN\n(GitHub Pages)"]
+    end
+
+    %% Daily Pull
+    Tier0 -.->|Daily Pull (86400s)| Router
+
+    %% Router/Gateway
+    subgraph Router["Broadband Gateway / Router\n(ZTE, Huawei, ASUS, OpenWrt / ARMv7 / dnsmasq)"]
+        subgraph Daemon["homeshield-daemon"]
+            D1["408 kB VmRSS Rust"]
+            D2["FNV-1a Flash Delta"]
+            D3["5s Self-Healing"]
+        end
+
+        subgraph IPTables["iptables & ip6tables Anti-Bypass Rules"]
+            IP4["IPv4: NAT REDIRECT\nUDP/TCP 53 -> dnsmasq"]
+            IP6["IPv6: FORWARD REJECT\nport 53 / 853 (Anti-DoT)"]
+        end
+
+        subgraph Dnsmasq["dnsmasq Dual-Stack Sinkhole"]
+            DS1["Blocks -> 0.0.0.0 & ::"]
+            DS2["Whitelist -> Forward to WAN"]
+        end
+    end
+
+    %% Client Connections
+    subgraph Clients["Client Devices"]
+        Mobile["Mobile & PC Clients\n- iOS, Android, Mac\n- Zero Configuration"]
+        SmartTV["Smart TV / Android\n- Sony, TCL, Mi TV\n- Telemetry Blocked"]
+    end
+
+    %% CleanYourTV Companion
+    subgraph Companion["CleanYourTV Companion (Workstation Python CLI)"]
+        CYT1["Zero-touch DHCP discovery"]
+        CYT2["Debloats 1,100+ telemetry\n& ad packages"]
+        CYT3["Auto-creates backup\n& standalone rollback"]
+    end
+
+    %% Connections
+    Daemon -->|"Anti-bypass\nenforcement"| IPTables
+    IPTables -->|"DNS redirection"| Dnsmasq
+    Dnsmasq -->|"Sinkhole / Forward"| Mobile
+    Dnsmasq -->|"Sinkhole / Forward"| SmartTV
+    SmartTV -.->|ADB over LAN| Companion
+
+    %% Styling
+    classDef tier0 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef router fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef client fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef companion fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+
+    class Tier0 tier0
+    class Router,Daemon,IPTables,Dnsmasq router
+    class Mobile,SmartTV client
+    class Companion companion
+```
+
+```mermaid
+graph TD
+    %% Rollback Hierarchy
+    subgraph Rollback["HomeShield Rollback Hierarchy"]
+        L1["Level 1: Soft-Rollback (Toggle)\nInstant pause (< 100 ms)"]
+        L2["Level 2: Engine Switch (Rust→Shell)\nZero downtime fallback (< 5 s)"]
+        L3["Level 3: Full Gateway Revert\nClean uninstall & factory state (< 30 s)"]
+        L4["Level 4: Smart TV Rollback\n1-Click ADB restoration (< 10 s)"]
+    end
+
+    %% Level 1 Details
+    subgraph L1_Detail["Level 1: Instant Soft-Rollback"]
+        L1_When["When: User reports website issue;\nimmediate unblocking needed"]
+        L1_Action["Action: python3 homeshield.py toggle\n--ip 192.168.1.1"]
+        L1_Time["Time: < 1 second"]
+        L1_Impact["Impact: Reverts DNS to unblocked\npass-through; daemon alive"]
+    end
+
+    %% Level 2 Details
+    subgraph L2_Detail["Level 2: Engine Fallback Rollback"]
+        L2_When["When: Daemon kernel panic or\narchitecture warning"]
+        L2_Action["Action: python3 homeshield.py deploy\n--ip 192.168.1.1 --engine shell"]
+        L2_Time["Time: < 5 seconds"]
+        L2_Impact["Impact: Kills Rust binary, activates\nadblock.sh loop + watchdog.sh"]
+    end
+
+    %% Level 3 Details
+    subgraph L3_Detail["Level 3: Complete Gateway Rollback"]
+        L3_When["When: Gateway firmware update,\nISP maintenance, or permanent removal"]
+        L3_Action["Action: python3 homeshield.py uninstall\n--ip 192.168.1.1"]
+        L3_Time["Time: < 30 seconds"]
+        L3_Impact["Impact: 100% factory state restored;\nzero leftover files on Flash ROM"]
+    end
+
+    %% Level 3 Manual Emergency
+    subgraph L3_Manual["Level 3: Manual Emergency (Telnet)"]
+        M1["1. killall homeshield-daemon\n    watchdog.sh adblock.sh"]
+        M2["2. iptables/ip6tables -D\n    (flush all DNS redirect rules)"]
+        M3["3. echo '127.0.0.1 localhost'\n    > /var/tmp/hosts\n    killall -HUP dnsmasq"]
+        M4["4. rm -rf /userconfig/homeshield-*\n    /userconfig/adblock.*\n    /userconfig/watchdog.sh\n    /userconfig/whitelist.txt"]
+    end
+
+    %% Level 4 Details
+    subgraph L4_Detail["Level 4: Device & Smart TV Rollback"]
+        L4_When["When: Debloated TV/device package\ncauses unwanted UI side-effect"]
+        L4_Action1["Auto: sh backups/restore_<ip>_<ts>.sh"]
+        L4_Action2["CLI: cargo run -- device restore\n--target <device_ip>"]
+        L4_Impact["Impact: Re-enables all disabled\nAndroid packages to original state"]
+    end
+
+    %% Connections
+    L1 --> L1_When
+    L1 --> L1_Action
+    L1 --> L1_Time
+    L1 --> L1_Impact
+
+    L2 --> L2_When
+    L2 --> L2_Action
+    L2 --> L2_Time
+    L2 --> L2_Impact
+
+    L3 --> L3_When
+    L3 --> L3_Action
+    L3 --> L3_Time
+    L3 --> L3_Impact
+    L3_Detail --> L3_Manual
+
+    L4 --> L4_When
+    L4 --> L4_Action1
+    L4 --> L4_Action2
+    L4 --> L4_Impact
+
+    %% Styling
+    classDef hierarchy fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef level1 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef level2 fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef level3 fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef level4 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef manual fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+
+    class Rollback hierarchy
+    class L1,L1_When,L1_Action,L1_Time,L1_Impact level1
+    class L2,L2_When,L2_Action,L2_Time,L2_Impact level2
+    class L3,L3_When,L3_Action,L3_Time,L3_Impact,L3_Detail level3
+    class L3_Manual,M1,M2,M3,M4 manual
+    class L4,L4_When,L4_Action1,L4_Action2,L4_Impact level4
+```
+
+---
+
+**Architecture diagram also available as standalone file:** [`docs/architecture.mermaid`](docs/architecture.mermaid)
+
+<details>
+<summary>📋 Legacy ASCII Diagram (for reference)</summary>
+
 ```text
                ┌────────────────────────────────────────────────────────┐
                │              Tier 0 Cloud Edge (GitHub Actions)        │
@@ -194,7 +352,7 @@ HomeShield employs a **Decoupled, Zero-Hop Edge Architecture**. The router handl
 │                                          ┌──────────────────────────────────┐          │
 │                                          │  dnsmasq Dual-Stack Sinkhole     │          │
 │                                          │  - Blocks -> 0.0.0.0 & ::        │          │
-│                                          │  - Whitelist -> Forward to WAN   │          │
+│                                          │  - Whitelist -> Forward to WAN   │
 │                                          └──────────────────────────────────┘          │
 └───────────────────────────────────────────┬────────────────────────────────────────────┘
                                             │
@@ -213,6 +371,7 @@ HomeShield employs a **Decoupled, Zero-Hop Edge Architecture**. The router handl
                                  │  - Auto-creates backup & standalone rollback      │
                                  └───────────────────────────────────────────────────┘
 ```
+</details>
 
 ---
 
@@ -320,6 +479,46 @@ HomeShield curates and synchronizes **29 active, verified upstream threat intell
 
 HomeShield delivers daily updates with zero downtime, minimal RAM (`408 kB`), and zero unnecessary Flash wear through clean systems design patterns:
 
+```mermaid
+graph TD
+    %% Tier 0 Cloud Automation
+    subgraph Tier0["Tier 0 Cloud Automation (Daily at 23:00 UTC / 06:00 ICT Bangkok)"]
+        GH["GitHub Actions"]
+        Pull["Pull 29 Feeds (JoinSet Concurrent)"]
+        Dedup["Deduplicate"]
+        CDN["CDN (hosts.txt)"]
+    end
+
+    GH --> Pull --> Dedup --> CDN
+
+    %% Daily HTTP Pull
+    CDN -.->|Daily HTTP Pull (86400s)| Supervisor
+
+    %% Broadband Gateway Supervisor
+    subgraph Supervisor["Broadband Gateway Supervisor (Rust Daemon — Design-Pattern Optimized)"]
+        Step1["Step 1: Builder + Flyweight\nPre-size HashSet (300k+) & Arc<Whitelist> (0 clone)"]
+        Step2["Step 2: Integrity & FNV-1a\n128 KB streaming buffer delta check -> Zero Flash"]
+        Step3["Step 3: Cache-Aside & Pool\nO(1) domain_count sidecar + reused String buffers"]
+        Step4["Step 4: Atomic Memory Swap\nSIGHUP to dnsmasq (<100 ms, zero dropped packets)"]
+    end
+
+    Step1 --> Step2 --> Step3 --> Step4
+
+    %% Styling
+    classDef tier0 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef supervisor fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef step fill:#f5f5f5,stroke:#757575,stroke-width:1px,stroke-dasharray: 5 5
+
+    class Tier0 tier0
+    class Supervisor supervisor
+    class Step1,Step2,Step3,Step4 step
+```
+
+**Update lifecycle diagram also available as standalone file:** [`docs/update-lifecycle.mermaid`](docs/update-lifecycle.mermaid)
+
+<details>
+<summary>📋 Legacy ASCII Diagram (for reference)</summary>
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │  Tier 0 Cloud Automation (Daily at 23:00 UTC / 06:00 ICT Bangkok)                      │
@@ -336,6 +535,7 @@ HomeShield delivers daily updates with zero downtime, minimal RAM (`408 kB`), an
 │  [ Step 4: Atomic Memory Swap ] ──▶ SIGHUP to dnsmasq (<100 ms, zero dropped packets)   │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+</details>
 
 #### How to Trigger an Update Manually:
 ```bash
