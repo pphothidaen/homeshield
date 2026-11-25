@@ -21,7 +21,7 @@
 [为什么选择 HomeShield？](#-现代网络犯罪危机为什么浏览器插件无法防范) • [四大核心防护支柱](#-4-大核心安全支柱) • [对比方案](#-全面对比-homeshield-vs-其他方案) • [实测效果 (82%)](#-实测效果前后对比-82-拦截率) • [系统架构](#-系统架构) • [快速开始](#-快速开始) • [规则来源与更新机制](#-威胁情报源与自动更新机制) • [应急回滚手册](docs/PLAYBOOK.md)
 
 <p align="center">
-  🌐 <b>语言 / Languages:</b> <a href="README.md">English</a> | <a href="README.th.md">ภาษาไทย</a> | 简体中文 (Chinese)
+  🌐 <b>语言 / Languages:</b> <a href="README.md">English</a> | <a href="README.th.md">ภาษาไทย</a> | 简体中文 (Chinese) | <a href="README.ar.md">العربية</a> | <a href="README.es.md">Spanish</a> | <a href="README.vi.md">Tiếng Việt</a> | <a href="README.ja.md">日本語</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt.md">Português</a> | <a href="README.nl.md">Nederlands</a> | <a href="README.de.md">Deutsch</a> | <a href="README.uk.md">Українська</a> | <a href="README.uz.md">Oʻzbekcha</a> | <a href="README.fr.md">Français</a> | <a href="README.el.md">Ελληνικά</a> | <a href="README.he.md">עברית</a>
 </p>
 
 </div>
@@ -133,7 +133,7 @@
 
 ## 📊 实测效果前后对比 (82% 拦截率)
 
-使用独立第三方基准测试套件 [TurtleCute Ad Blocker Test suite](https://adblock.turtlecute.org/)（包含 130 个广告服务器、数据追踪、遥测与弹窗端点），通过 Kapture MCP 驱动 Chrome 浏览器自动化测试：
+使用独立第三方基准测试套件 [TurtleCute Ad Blocker Test suite](https://www.adblock.turtlecute.org/)（包含 130 个广告服务器、数据追踪、遥测与弹窗端点），通过 Kapture MCP 驱动 Chrome 浏览器自动化测试：
 
 <p align="center">
   <img src="docs/images/verification-score.png" alt="HomeShield 82% TurtleCute Verification Score" width="100%" />

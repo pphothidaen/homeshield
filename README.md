@@ -21,7 +21,7 @@
 [Why HomeShield?](#-the-modern-cybercrime-epidemic-why-browser-adblockers-fail) • [4 Security Pillars](#-4-core-security-pillars) • [Comparison](#-the-ultimate-comparison-homeshield-vs-alternatives) • [Before & After (82%)](#-real-world-verification-before--after) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [Blocklist Sources & Updates](#-threat-intelligence-sources--update-lifecycle) • [Playbook & Rollback](docs/PLAYBOOK.md)
 
 <p align="center">
-  🌐 <b>Languages / 语言 / ภาษา:</b> English | <a href="README.th.md">ภาษาไทย (Thai)</a> | <a href="README.zh-CN.md">简体中文 (Chinese)</a>
+  🌐 <b>Languages / 语言 / ภาษา:</b> English | <a href="README.th.md">ภาษาไทย (Thai)</a> | <a href="README.zh-CN.md">简体中文 (Chinese)</a> | <a href="README.ar.md">العربية (Arabic)</a> | <a href="README.es.md">Español (Spanish)</a> | <a href="README.vi.md">Tiếng Việt (Vietnamese)</a> | <a href="README.ja.md">日本語 (Japanese)</a> | <a href="README.it.md">Italiano (Italian)</a> | <a href="README.pt.md">Português (Portuguese)</a> | <a href="README.nl.md">Nederlands (Dutch)</a> | <a href="README.de.md">Deutsch (German)</a> | <a href="README.uk.md">Українська (Ukrainian)</a> | <a href="README.uz.md">Özbekcha (Uzbek)</a> | <a href="README.fr.md">Français (French)</a> | <a href="README.el.md">Ελληνικά (Greek)</a> | <a href="README.he.md">עברית (Hebrew)</a>
 </p>
 
 </div>
@@ -135,7 +135,7 @@ HomeShield operates in three autonomous, carrier-grade phases:
 
 ## 📊 Real-World Verification: Before & After
 
-Live testing conducted against the independent [TurtleCute Ad Blocker Test suite](https://adblock.turtlecute.org/) (130 ad servers, analytics trackers, telemetry endpoints, and popups) using the **Toggle** feature under Chrome browser automation via Kapture MCP:
+Live testing conducted against the independent [TurtleCute Ad Blocker Test suite](https://www.adblock.turtlecute.org/) (130 ad servers, analytics trackers, telemetry endpoints, and popups) using the **Toggle** feature under Chrome browser automation via Kapture MCP:
 
 <p align="center">
   <img src="docs/images/verification-score.png" alt="HomeShield 82% TurtleCute Verification Score" width="100%" />

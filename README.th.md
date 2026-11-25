@@ -21,7 +21,7 @@
 [ทำไมต้อง HomeShield?](#-วิกฤตไซเบอร์ยุคใหม่-ทำไมแอดบล็อกเกอร์บนเบราว์เซอร์ถึงไม่เพียงพอ) • [4 เสาหลักความปลอดภัย](#-4-เสาหลักความปลอดภัยของ-homeshield) • [ตารางเปรียบเทียบ](#-ตารางเปรียบเทียบ-homeshield-vs-ทางเลือกอื่น) • [ผลการทดสอบจริง (82%)](#-ผลการทดสอบในสภาพแวดล้อมจริง-ก่อนและหลังใช้งาน) • [สถาปัตยกรรม](#-สถาปัตยกรรมระบบ-architecture) • [เริ่มต้นใช้งาน](#-เริ่มต้นใช้งานด่วน-quick-start) • [แหล่งที่มาของบล็อกลิสต์และการอัปเดต](#-แหล่งที่มาของบล็อกลิสต์และวงจรอัปเดต-threat-intelligence) • [คู่มือรับมือเหตุฉุกเฉิน (Playbook)](docs/PLAYBOOK.md)
 
 <p align="center">
-  🌐 <b>ภาษา / Languages / 语言:</b> <a href="README.md">English</a> | ภาษาไทย (Thai) | <a href="README.zh-CN.md">简体中文 (Chinese)</a>
+  🌐 <b>ภาษา / Languages / 语言:</b> <a href="README.md">English</a> | ภาษาไทย (Thai) | <a href="README.zh-CN.md">简体中文 (Chinese)</a> | <a href="README.ar.md">อารบิก (Arabic)</a> | <a href="README.es.md">สเปน (Spanish)</a> | <a href="README.vi.md">Vietnamese (Vietnamese)</a> | <a href="README.ja.md">ญี่ปุ่น (Japanese)</a> | <a href="README.it.md">อิตาเลียน (Italian)</a> | <a href="README.pt.md">โปรตุเกส (Portuguese)</a> | <a href="README.nl.md">ดัชชี (Dutch)</a> | <a href="README.de.md">เยอรมัน (German)</a> | <a href="README.uk.md">ยูเครน (Ukrainian)</a> | <a href="README.uz.md">อุซbek (Uzbek)</a> | <a href="README.fr.md">ฝรั่งเศส (French)</a> | <a href="README.el.md">กรีก (Greek)</a> | <a href="README.he.md">ฮברית (Hebrew)</a>
 </p>
 
 </div>
@@ -133,7 +133,7 @@
 
 ## 📊 ผลการทดสอบในสภาพแวดล้อมจริง: ก่อนและหลังใช้งาน
 
-ทดสอบประสิทธิภาพเทียบกับมาตรฐาน [TurtleCute Ad Blocker Test suite](https://adblock.turtlecute.org/) (ทดสอบปลายทางโฆษณา ตัวติดตามสถิติ และป๊อปอัป 130 รายการ) ควบคุมผ่านเบราว์เซอร์อัตโนมัติบน Chrome:
+ทดสอบประสิทธิภาพเทียบกับมาตรฐาน [TurtleCute Ad Blocker Test suite](https://www.adblock.turtlecute.org/) (ทดสอบปลายทางโฆษณา ตัวติดตามสถิติ และป๊อปอัป 130 รายการ) ควบคุมผ่านเบราว์เซอร์อัตโนมัติบน Chrome:
 
 <p align="center">
   <img src="docs/images/verification-score.png" alt="HomeShield 82% TurtleCute Verification Score" width="100%" />
