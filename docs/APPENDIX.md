@@ -15,6 +15,10 @@ homeshield/
 ├── SECURITY.md                    ← Security disclosure policy
 ├── docs/
 │   ├── PLAYBOOK.md                ← Ops runbook: deploy, toggle, incident response, rollback
+│   ├── architecture.mermaid         ← Architecture diagram (Mermaid graph TD)
+│   ├── architecture-mermaid-legacy.mermarkdown ← Legacy ASCII → Mermaid conversion
+│   ├── rollback-hierarchy.mermaid ← Rollback hierarchy & verification checklist
+│   └── update-lifecycle.mermaid   ← Update lifecycle & design patterns
 │   └── APPENDIX.md                ← This file: documentation index
 └── config/
     ├── adblock.conf               ← Router engine configuration (source of truth for URLs)
@@ -34,6 +38,7 @@ homeshield/
 | [SECURITY.md](../SECURITY.md) | Vulnerability disclosure process | Security researchers |
 | [docs/PLAYBOOK.md](PLAYBOOK.md) | Day-to-day operations: deploy, toggle, rollback | Operators |
 | [docs/APPENDIX.md](APPENDIX.md) | This index | Everyone |
+| [docs/architecture-mermaid-legacy.mermarkdown](architecture-mermaid-legacy.mermarkdown) | Legacy ASCII → Mermaid conversion reference | Everyone |
 
 ---
 
