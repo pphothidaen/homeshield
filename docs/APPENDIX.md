@@ -62,8 +62,16 @@ flowchart LR
 | [PRIVACY.md](../PRIVACY.md) | Data handling and privacy guarantees | End users |
 | [SECURITY.md](../SECURITY.md) | Vulnerability disclosure process | Security researchers |
 | [docs/PLAYBOOK.md](PLAYBOOK.md) | Day-to-day operations: deploy, toggle, rollback | Operators |
+| [docs/architecture.mermaid](architecture.mermaid) | Standalone Zero-Hop Edge Architecture diagram (Mermaid) | Architects, devs |
+| [docs/rollback-hierarchy.mermaid](rollback-hierarchy.mermaid) | Standalone 4-Tier Rollback hierarchy & verification checklist | Operators, devs |
+| [docs/update-lifecycle.mermaid](update-lifecycle.mermaid) | Standalone Daily Sync & Design Patterns diagram (Mermaid) | Maintainers, devs |
 | [docs/APPENDIX.md](APPENDIX.md) | This index | Everyone |
-| ~~[docs/architecture-mermaid-legacy.mermarkdown](architecture-mermaid-legacy.mermarkdown)~~ *(deleted)* | Legacy ASCII → Mermaid conversion reference *(removed)* | Everyone |
+
+### 🌐 Localized READMEs (16 Languages)
+- [English (`README.md`)](../README.md) • [ภาษาไทย (`README.th.md`)](../README.th.md) • [简体中文 (`README.zh-CN.md`)](../README.zh-CN.md) • [العربية (`README.ar.md`)](../README.ar.md)
+- [Deutsch (`README.de.md`)](../README.de.md) • [Ελληνικά (`README.el.md`)](../README.el.md) • [Español (`README.es.md`)](../README.es.md) • [Français (`README.fr.md`)](../README.fr.md)
+- [עברית (`README.he.md`)](../README.he.md) • [Italiano (`README.it.md`)](../README.it.md) • [日本語 (`README.ja.md`)](../README.ja.md) • [Nederlands (`README.nl.md`)](../README.nl.md)
+- [Português (`README.pt.md`)](../README.pt.md) • [Українська (`README.uk.md`)](../README.uk.md) • [Oʻzbekcha (`README.uz.md`)](../README.uz.md) • [Tiếng Việt (`README.vi.md`)](../README.vi.md)
 
 ---
 

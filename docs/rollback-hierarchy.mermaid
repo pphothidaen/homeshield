@@ -120,7 +120,7 @@ sequenceDiagram
 
     %% Level 4
     User->>CLI: cargo run -- device restore --target 192.168.1.50
-    CLI->>TV: ADB: pm enable <packages...>
+    CLI->>TV: ADB: pm enable packages...
     TV-->>User: All packages restored (< 10 s)
 ```
 

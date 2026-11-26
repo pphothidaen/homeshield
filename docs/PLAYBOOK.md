@@ -1,7 +1,8 @@
 # 📖 HomeShield Operations Playbook & Rollback Plan
 
 > **Carrier-Grade Operational Runbook, Disaster Recovery, and Fail-Safe Rollback Strategy**  
-> *Target Environments: GPON/EPON ONTs, OpenWrt Gateways, Asuswrt-Merlin Routers, and Managed L3 Switches.*
+> *Target Environments: GPON/EPON ONTs, OpenWrt Gateways, Asuswrt-Merlin Routers, and Managed L3 Switches.*  
+> 📚 **See also:** [HomeShield Documentation Appendix & Index](APPENDIX.md) • [Main README](../README.md)
 
 ---
 
@@ -314,7 +315,7 @@ graph TD
     class L4,L4_When,L4_Action1,L4_Action2,L4_Impact level4
 ```
 
-**Rollback diagram also available as standalone file:** [`docs/rollback-hierarchy.mermaid`](docs/rollback-hierarchy.mermaid)
+**Rollback diagram also available as standalone file:** [`docs/rollback-hierarchy.mermaid`](rollback-hierarchy.mermaid)
 
 ### Level 1: Instant Soft-Rollback (Diagnostic Pause)
 - **When to use:** User reports a website issue; immediate unblocking needed.

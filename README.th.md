@@ -18,7 +18,7 @@
   <b>ปกป้องอุปกรณ์ทั้งบ้านจากแก๊งคอลเซ็นเตอร์ สแกมเมอร์ทางการเงิน ลิงก์หลอกโหลด APK ปลอม โฆษณาแฝงมัลแวร์ เว็บพนัน และการดักเก็บข้อมูลจาก Smart TV — ทำงานโดยตรงบนเร้าเตอร์บรอดแบนด์เดิม ไม่ต้องซื้ออุปกรณ์เสริม</b>
 </p>
 
-[ทำไมต้อง HomeShield?](#-วิกฤตไซเบอร์ยุคใหม่-ทำไมแอดบล็อกเกอร์บนเบราว์เซอร์ถึงไม่เพียงพอ) • [4 เสาหลักความปลอดภัย](#-4-เสาหลักความปลอดภัยของ-homeshield) • [ตารางเปรียบเทียบ](#-ตารางเปรียบเทียบ-homeshield-vs-ทางเลือกอื่น) • [ผลการทดสอบจริง (97%)](#-ผลการทดสอบในสภาพแวดล้อมจริง-ก่อนและหลังใช้งาน) • [สถาปัตยกรรม](#-สถาปัตยกรรมระบบ-architecture) • [เริ่มต้นใช้งาน](#-เริ่มต้นใช้งานด่วน-quick-start) • [แหล่งที่มาของบล็อกลิสต์และการอัปเดต](#-แหล่งที่มาของบล็อกลิสต์และวงจรอัปเดต-threat-intelligence) • [คู่มือรับมือเหตุฉุกเฉิน (Playbook)](docs/PLAYBOOK.md)
+[ทำไมต้อง HomeShield?](#-วิกฤตไซเบอร์ยุคใหม่-ทำไมแอดบล็อกเกอร์บนเบราว์เซอร์ถึงไม่เพียงพอ) • [4 เสาหลักความปลอดภัย](#-4-เสาหลักความปลอดภัยของ-homeshield) • [ตารางเปรียบเทียบ](#-ตารางเปรียบเทียบ-homeshield-vs-ทางเลือกอื่น) • [ผลการทดสอบจริง (97%)](#-ผลการทดสอบในสภาพแวดล้อมจริง-ก่อนและหลังใช้งาน) • [สถาปัตยกรรม](#-สถาปัตยกรรมระบบ-architecture) • [เริ่มต้นใช้งาน](#-เริ่มต้นใช้งานด่วน-quick-start) • [แหล่งที่มาของบล็อกลิสต์และการอัปเดต](#-แหล่งที่มาของบล็อกลิสต์และวงจรอัปเดต-threat-intelligence) • [คู่มือรับมือเหตุฉุกเฉิน (Playbook)](docs/PLAYBOOK.md) • [สารบัญเอกสาร (Appendix)](docs/APPENDIX.md)
 
 <p align="center">
   🌐 <b>ภาษา / Languages / 语言:</b> <a href="README.md">English</a> | ภาษาไทย (Thai) | <a href="README.zh-CN.md">简体中文 (Chinese)</a> | <a href="README.ar.md">อารบิก (Arabic)</a> | <a href="README.es.md">สเปน (Spanish)</a> | <a href="README.vi.md">Vietnamese (Vietnamese)</a> | <a href="README.ja.md">ญี่ปุ่น (Japanese)</a> | <a href="README.it.md">อิตาเลียน (Italian)</a> | <a href="README.pt.md">โปรตุเกส (Portuguese)</a> | <a href="README.nl.md">ดัชชี (Dutch)</a> | <a href="README.de.md">เยอรมัน (German)</a> | <a href="README.uk.md">ยูเครน (Ukrainian)</a> | <a href="README.uz.md">อุซbek (Uzbek)</a> | <a href="README.fr.md">ฝรั่งเศส (French)</a> | <a href="README.el.md">กรีก (Greek)</a> | <a href="README.he.md">ฮברית (Hebrew)</a>
@@ -328,7 +328,7 @@ graph TD
         GH --> Pull --> Dedup --> CDN
     end
 
-    CDN -.->|⬇️ Daily HTTP Pull (86400s)| Supervisor
+    CDN -.->|"⬇️ Daily HTTP Pull (86400s)"| Supervisor
 
     subgraph Supervisor["⚙️ Broadband Gateway Supervisor — Rust Daemon (Design-Pattern Optimized)"]
         Step1["🏗️ Step 1: Builder + Flyweight\nPre-size HashSet 300k+ & Arc-Whitelist — 0 clone"]
@@ -378,7 +378,7 @@ sequenceDiagram
     Router-->>User: Factory state
 
     User->>CLI: cargo run -- device restore --target 192.168.1.50
-    CLI->>TV: ADB: pm enable <packages...>
+    CLI->>TV: ADB: pm enable packages...
     TV-->>User: All packages restored (< 10 s)
 ```
 
