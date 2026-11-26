@@ -18,7 +18,7 @@
   <b>Network-wide protection against financial scammers, fake loan APKs, malvertising, gambling traps, and Smart TV spyware — running directly inside standard broadband routers without extra hardware.</b>
 </p>
 
-[Why HomeShield?](#-the-modern-cybercrime-epidemic-why-browser-adblockers-fail) • [4 Security Pillars](#-4-core-security-pillars) • [Comparison](#-the-ultimate-comparison-homeshield-vs-alternatives) • [Before & After (82%)](#-real-world-verification-before--after) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [Blocklist Sources & Updates](#-threat-intelligence-sources--update-lifecycle) • [Playbook & Rollback](docs/PLAYBOOK.md)
+[Why HomeShield?](#-the-modern-cybercrime-epidemic-why-browser-adblockers-fail) • [4 Security Pillars](#-4-core-security-pillars) • [Comparison](#-the-ultimate-comparison-homeshield-vs-alternatives) • [Before & After (97%)](#-real-world-verification-before--after) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [Blocklist Sources & Updates](#-threat-intelligence-sources--update-lifecycle) • [Playbook & Rollback](docs/PLAYBOOK.md)
 
 <p align="center">
   🌐 <b>Languages / 语言 / ภาษา:</b> English | <a href="README.th.md">ภาษาไทย (Thai)</a> | <a href="README.zh-CN.md">简体中文 (Chinese)</a> | <a href="README.ar.md">العربية (Arabic)</a> | <a href="README.es.md">Español (Spanish)</a> | <a href="README.vi.md">Tiếng Việt (Vietnamese)</a> | <a href="README.ja.md">日本語 (Japanese)</a> | <a href="README.it.md">Italiano (Italian)</a> | <a href="README.pt.md">Português (Portuguese)</a> | <a href="README.nl.md">Nederlands (Dutch)</a> | <a href="README.de.md">Deutsch (German)</a> | <a href="README.uk.md">Українська (Ukrainian)</a> | <a href="README.uz.md">Özbekcha (Uzbek)</a> | <a href="README.fr.md">Français (French)</a> | <a href="README.el.md">Ελληνικά (Greek)</a> | <a href="README.he.md">עברית (Hebrew)</a>
@@ -54,7 +54,7 @@ In the past, ad blockers were a mere luxury for visual convenience. Today, rogue
     <td width="50%" valign="top">
       <h3>1. 🛑 Anti-Scam & Financial Cybercrime Defense</h3>
       <ul>
-        <li><b>Fake Banking & Gov Portals:</b> Sinkholes phishing lookalike domains and typosquatted URLs imitating official institutions.</li>
+        <li><b>Fake Banking & Gov Portals:</b> Sinkholes phishing lookalike domains and typosquatting URLs imitating official institutions.</li>
         <li><b>Malvertising Shield:</b> Neutralizes deceptive ad networks distributing malicious Android APKs and credential harvesters.</li>
         <li><b>Zero-Hop Disconnect:</b> Resolves malicious domains to <code>0.0.0.0</code> & <code>::</code> instantly, terminating connections in &lt; 0.1 ms with zero timeout latency.</li>
       </ul>
@@ -135,10 +135,10 @@ HomeShield operates in three autonomous, carrier-grade phases:
 
 ## 📊 Real-World Verification: Before & After
 
-Live testing conducted against the independent [TurtleCute Ad Blocker Test suite](https://www.adblock.turtlecute.org/) (130 ad servers, analytics trackers, telemetry endpoints, and popups) using the **Toggle** feature under Chrome browser automation via Kapture MCP:
+Live testing conducted against the independent [TurtleCute Ad Blocker Test suite](https://adblock.turtlecute.org/) (130 ad servers, analytics trackers, telemetry endpoints, and popups) using the **Toggle** feature under Chrome browser automation via Kapture MCP (re-captured 2026-11-26 on a ZTE F6107A):
 
 <p align="center">
-  <img src="docs/images/verification-score.png" alt="HomeShield 82% TurtleCute Verification Score" width="100%" />
+  <img src="docs/images/verification-score.png" alt="HomeShield TurtleCute Verification Score" width="100%" />
 </p>
 
 <table align="center" width="100%">
@@ -153,15 +153,15 @@ Live testing conducted against the independent [TurtleCute Ad Blocker Test suite
       <sub>Over 122 ad trackers, OEM telemetry calls, and analytics beacons leaked directly across the network.</sub>
     </td>
     <td align="center" width="50%" valign="top">
-      <img src="docs/images/after-active.png" alt="After HomeShield: 107 Blocked, 82% Score" width="100%" /><br/>
-      <b>Score: 82% (107 / 130 Blocked)</b><br/>
-      <sub><b>107 ad & tracker domains sinkholed at the router (only 23 not blocked)</b>. The remaining 23 are browser-only CSS/DOM cosmetic elements and in-page script injections unsupported by router dnsmasq.</sub>
+      <img src="docs/images/after-active.png" alt="After HomeShield: 126 Blocked, 97% Score" width="100%" /><br/>
+      <b>Score: 97% (126 / 130 Blocked)</b><br/>
+      <sub><b>126 ad & tracker domains sinkholed at the router (only 4 not blocked)</b>. The remaining 4 are browser-only tests (2 cosmetic ad placeholders + 2 first-party <code>ads.js</code>/<code>pagead.js</code> scripts) that DNS filtering cannot see.</sub>
     </td>
   </tr>
 </table>
 
 > [!NOTE]
-> **Why 82% is the peak achievable at the network DNS layer:** DNS sinkholes operate at Layer 7 domain resolution. Elements that fail in the test suite are cosmetic CSS element-hiding rules and in-page JavaScript script injection, which can only be hidden by browser extensions like uBlock Origin. Every network-level ad request was blocked at `0.0.0.0` with **zero latency**.
+> **Why 97% is the peak achievable at the network DNS layer:** DNS sinkholes operate at Layer 7 domain resolution. Elements that fail in the test suite are cosmetic CSS element-hiding rules and in-page JavaScript script injection, which can only be hidden by browser extensions like uBlock Origin. Every network-level ad request was blocked at `0.0.0.0` with **zero latency**.
 
 > [!TIP]
 > **Automated 24h Threat Sync with TurtleCute:** The official [TurtleCute blocklists](https://github.com/Turtlecute33/adblocktest) (`d3host.txt` & `d3host.adblock`) are integrated directly into HomeShield's daily Tier 0 CDN build cycle (`.github/workflows/compile-blocklist.yml`) and router fallback configs (`config/adblock.conf`), ensuring continuous synchronization and zero regression against test endpoints.
@@ -648,3 +648,11 @@ Please review our [Contributing Guidelines](CONTRIBUTING.md) and [Security Polic
 - Threat feeds and ad blocking lists powered by [HaGeZi Multi Blocklists](https://github.com/hagezi/dns-blocklists) and [StevenBlack Hosts](https://github.com/StevenBlack/hosts).
 - Smart TV package analysis inspired by [CleanYourTV](https://github.com/udhaykumarbala/cleanyourtv-app) by Udhay Kumar Bala.
 - Licensed under the [MIT License](LICENSE).
+
+## 🧪 Adblock TurtleCute Site Status
+
+- **Apex domain** `https://adblock.turtlecute.org/` resolves correctly (HTTP 200) via GitHub Pages.
+- **WWW sub‑domain** `https://adblock.turtlecute.org/` has no DNS record, resulting in `ERR_NAME_NOT_RESOLVED`.
+- Findings are documented in the [Investigation Report](adblock_turtlecute_investigation.md).
+
+These updates reflect the current accessibility of the TurtleCute test suite used in the verification steps.

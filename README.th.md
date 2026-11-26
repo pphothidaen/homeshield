@@ -18,7 +18,7 @@
   <b>ปกป้องอุปกรณ์ทั้งบ้านจากแก๊งคอลเซ็นเตอร์ สแกมเมอร์ทางการเงิน ลิงก์หลอกโหลด APK ปลอม โฆษณาแฝงมัลแวร์ เว็บพนัน และการดักเก็บข้อมูลจาก Smart TV — ทำงานโดยตรงบนเร้าเตอร์บรอดแบนด์เดิม ไม่ต้องซื้ออุปกรณ์เสริม</b>
 </p>
 
-[ทำไมต้อง HomeShield?](#-วิกฤตไซเบอร์ยุคใหม่-ทำไมแอดบล็อกเกอร์บนเบราว์เซอร์ถึงไม่เพียงพอ) • [4 เสาหลักความปลอดภัย](#-4-เสาหลักความปลอดภัยของ-homeshield) • [ตารางเปรียบเทียบ](#-ตารางเปรียบเทียบ-homeshield-vs-ทางเลือกอื่น) • [ผลการทดสอบจริง (82%)](#-ผลการทดสอบในสภาพแวดล้อมจริง-ก่อนและหลังใช้งาน) • [สถาปัตยกรรม](#-สถาปัตยกรรมระบบ-architecture) • [เริ่มต้นใช้งาน](#-เริ่มต้นใช้งานด่วน-quick-start) • [แหล่งที่มาของบล็อกลิสต์และการอัปเดต](#-แหล่งที่มาของบล็อกลิสต์และวงจรอัปเดต-threat-intelligence) • [คู่มือรับมือเหตุฉุกเฉิน (Playbook)](docs/PLAYBOOK.md)
+[ทำไมต้อง HomeShield?](#-วิกฤตไซเบอร์ยุคใหม่-ทำไมแอดบล็อกเกอร์บนเบราว์เซอร์ถึงไม่เพียงพอ) • [4 เสาหลักความปลอดภัย](#-4-เสาหลักความปลอดภัยของ-homeshield) • [ตารางเปรียบเทียบ](#-ตารางเปรียบเทียบ-homeshield-vs-ทางเลือกอื่น) • [ผลการทดสอบจริง (97%)](#-ผลการทดสอบในสภาพแวดล้อมจริง-ก่อนและหลังใช้งาน) • [สถาปัตยกรรม](#-สถาปัตยกรรมระบบ-architecture) • [เริ่มต้นใช้งาน](#-เริ่มต้นใช้งานด่วน-quick-start) • [แหล่งที่มาของบล็อกลิสต์และการอัปเดต](#-แหล่งที่มาของบล็อกลิสต์และวงจรอัปเดต-threat-intelligence) • [คู่มือรับมือเหตุฉุกเฉิน (Playbook)](docs/PLAYBOOK.md)
 
 <p align="center">
   🌐 <b>ภาษา / Languages / 语言:</b> <a href="README.md">English</a> | ภาษาไทย (Thai) | <a href="README.zh-CN.md">简体中文 (Chinese)</a> | <a href="README.ar.md">อารบิก (Arabic)</a> | <a href="README.es.md">สเปน (Spanish)</a> | <a href="README.vi.md">Vietnamese (Vietnamese)</a> | <a href="README.ja.md">ญี่ปุ่น (Japanese)</a> | <a href="README.it.md">อิตาเลียน (Italian)</a> | <a href="README.pt.md">โปรตุเกส (Portuguese)</a> | <a href="README.nl.md">ดัชชี (Dutch)</a> | <a href="README.de.md">เยอรมัน (German)</a> | <a href="README.uk.md">ยูเครน (Ukrainian)</a> | <a href="README.uz.md">อุซbek (Uzbek)</a> | <a href="README.fr.md">ฝรั่งเศส (French)</a> | <a href="README.el.md">กรีก (Greek)</a> | <a href="README.he.md">ฮברית (Hebrew)</a>
@@ -133,10 +133,10 @@
 
 ## 📊 ผลการทดสอบในสภาพแวดล้อมจริง: ก่อนและหลังใช้งาน
 
-ทดสอบประสิทธิภาพเทียบกับมาตรฐาน [TurtleCute Ad Blocker Test suite](https://www.adblock.turtlecute.org/) (ทดสอบปลายทางโฆษณา ตัวติดตามสถิติ และป๊อปอัป 130 รายการ) ควบคุมผ่านเบราว์เซอร์อัตโนมัติบน Chrome:
+ทดสอบประสิทธิภาพเทียบกับมาตรฐาน [TurtleCute Ad Blocker Test suite](https://adblock.turtlecute.org/) (ทดสอบปลายทางโฆษณา ตัวติดตามสถิติ และป๊อปอัป 130 รายการ) ควบคุมผ่านเบราว์เซอร์อัตโนมัติบน Chrome ด้วย Kapture MCP (ถ่ายภาพใหม่เมื่อ 2026-11-26 บนเร้าเตอร์ ZTE F6107A):
 
 <p align="center">
-  <img src="docs/images/verification-score.png" alt="HomeShield 82% TurtleCute Verification Score" width="100%" />
+  <img src="docs/images/verification-score.png" alt="HomeShield TurtleCute Verification Score" width="100%" />
 </p>
 
 <table align="center" width="100%">
@@ -151,15 +151,15 @@
       <sub>พบว่ากว่า 122 รายการ ทั้งตัวดักข้อมูลโฆษณาและ Telemetry หลุดรอดเข้ามาในเครือข่าย</sub>
     </td>
     <td align="center" width="50%" valign="top">
-      <img src="docs/images/after-active.png" alt="After HomeShield: 107 Blocked, 82% Score" width="100%" /><br/>
-      <b>คะแนน: 82% (บล็อกได้ 107 จาก 130 รายการ)</b><br/>
-      <sub><b>โดเมนโฆษณาและตัวติดตาม 107 แห่งถูกบล็อกที่เร้าเตอร์ทันที</b> (เหลือเพียง 23 รายการที่เป็นการซ่อน CSS เฉพาะหน้าเว็บและสคริปต์ในตัวเบราว์เซอร์)</sub>
+      <img src="docs/images/after-active.png" alt="After HomeShield: 126 Blocked, 97% Score" width="100%" /><br/>
+      <b>คะแนน: 97% (บล็อกได้ 126 จาก 130 รายการ)</b><br/>
+      <sub><b>โดเมนโฆษณาและตัวติดตาม 126 แห่งถูกบล็อกที่เร้าเตอร์ทันที</b> (เหลือเพียง 4 รายการ: การซ่อนโฆษณาแบบ CSS 2 รายการ และสคริปต์ <code>ads.js</code>/<code>pagead.js</code> จากโดเมนเว็บทดสอบเอง 2 รายการ ซึ่ง DNS มองไม่เห็น)</sub>
     </td>
   </tr>
 </table>
 
 > [!NOTE]
-> **ทำไม 82% จึงเป็นคะแนนสูงสุดในระดับเครือข่าย DNS:** การบล็อกที่ระดับ DNS สามารถจัดการทุกการเรียกโดเมนภายนอกได้อย่างสมบูรณ์แบบ ส่วนอีก 18% ที่เหลือคือการซ่อนช่องว่าง (CSS cosmetic element hiding) ซึ่งเป็นหน้าที่เฉพาะของส่วนขยายเบราว์เซอร์อย่าง uBlock Origin บนเครื่องปลายทาง
+> **ทำไม 97% จึงเป็นคะแนนสูงสุดในระดับเครือข่าย DNS:** การบล็อกที่ระดับ DNS สามารถจัดการทุกการเรียกโดเมนภายนอกได้อย่างสมบูรณ์แบบ ส่วนอีก 3% ที่เหลือคือการซ่อนช่องว่าง (CSS cosmetic element hiding) ซึ่งเป็นหน้าที่เฉพาะของส่วนขยายเบราว์เซอร์อย่าง uBlock Origin บนเครื่องปลายทาง
 
 ---
 

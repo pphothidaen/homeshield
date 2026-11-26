@@ -202,6 +202,99 @@ cargo run --release --manifest-path rust/Cargo.toml -p homeshield-cli -- device 
 
 HomeShield provides four distinct levels of rollback depending on operational necessity:
 
+```mermaid
+graph TD
+    %% Rollback Hierarchy
+    subgraph Rollback["HomeShield Rollback Hierarchy"]
+        L1["Level 1: Soft-Rollback (Toggle)\nInstant pause (< 100 ms)"]
+        L2["Level 2: Engine Switch (Rust→Shell)\nZero downtime fallback (< 5 s)"]
+        L3["Level 3: Full Gateway Revert\nClean uninstall & factory state (< 30 s)"]
+        L4["Level 4: Smart TV Rollback\n1-Click ADB restoration (< 10 s)"]
+    end
+
+    %% Level 1 Details
+    subgraph L1_Detail["Level 1: Instant Soft-Rollback"]
+        L1_When["When: User reports website issue;\nimmediate unblocking needed"]
+        L1_Action["Action: python3 homeshield.py toggle\n--ip 192.168.1.1"]
+        L1_Time["Time: < 1 second"]
+        L1_Impact["Impact: Reverts DNS to unblocked\npass-through; daemon alive"]
+    end
+
+    %% Level 2 Details
+    subgraph L2_Detail["Level 2: Engine Fallback Rollback"]
+        L2_When["When: Daemon kernel panic or\narchitecture warning"]
+        L2_Action["Action: python3 homeshield.py deploy\n--ip 192.168.1.1 --engine shell"]
+        L2_Time["Time: < 5 seconds"]
+        L2_Impact["Impact: Kills Rust binary, activates\nadblock.sh loop + watchdog.sh"]
+    end
+
+    %% Level 3 Details
+    subgraph L3_Detail["Level 3: Complete Gateway Rollback"]
+        L3_When["When: Gateway firmware update,\nISP maintenance, or permanent removal"]
+        L3_Action["Action: python3 homeshield.py uninstall\n--ip 192.168.1.1"]
+        L3_Time["Time: < 30 seconds"]
+        L3_Impact["Impact: 100% factory state restored;\nzero leftover files on Flash ROM"]
+    end
+
+    %% Level 3 Manual Emergency
+    subgraph L3_Manual["Level 3: Manual Emergency (Telnet)"]
+        M1["1. killall homeshield-daemon\n    watchdog.sh adblock.sh"]
+        M2["2. iptables/ip6tables -D\n    (flush all DNS redirect rules)"]
+        M3["3. echo '127.0.0.1 localhost'\n    > /var/tmp/hosts\n    killall -HUP dnsmasq"]
+        M4["4. rm -rf /userconfig/homeshield-*\n    /userconfig/adblock.*\n    /userconfig/watchdog.sh\n    /userconfig/whitelist.txt"]
+    end
+
+    %% Level 4 Details
+    subgraph L4_Detail["Level 4: Device & Smart TV Rollback"]
+        L4_When["When: Debloated TV/device package\ncauses unwanted UI side-effect"]
+        L4_Action1["Auto: sh backups/restore_<ip>_<ts>.sh"]
+        L4_Action2["CLI: cargo run -- device restore\n--target <device_ip>"]
+        L4_Impact["Impact: Re-enables all disabled\nAndroid packages to original state"]
+    end
+
+    %% Connections
+    L1 --> L1_When
+    L1 --> L1_Action
+    L1 --> L1_Time
+    L1 --> L1_Impact
+
+    L2 --> L2_When
+    L2 --> L2_Action
+    L2 --> L2_Time
+    L2 --> L2_Impact
+
+    L3 --> L3_When
+    L3 --> L3_Action
+    L3 --> L3_Time
+    L3 --> L3_Impact
+    L3_Detail --> L3_Manual
+
+    L4 --> L4_When
+    L4 --> L4_Action1
+    L4 --> L4_Action2
+    L4 --> L4_Impact
+
+    %% Styling
+    classDef hierarchy fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef level1 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    classDef level2 fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef level3 fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef level4 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef manual fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+
+    class Rollback hierarchy
+    class L1,L1_When,L1_Action,L1_Time,L1_Impact level1
+    class L2,L2_When,L2_Action,L2_Time,L2_Impact level2
+    class L3,L3_When,L3_Action,L3_Time,L3_Impact,L3_Detail level3
+    class L3_Manual,M1,M2,M3,M4 manual
+    class L4,L4_When,L4_Action1,L4_Action2,L4_Impact level4
+```
+
+**Rollback diagram also available as standalone file:** [`docs/rollback-hierarchy.mermaid`](docs/rollback-hierarchy.mermaid)
+
+<details>
+<summary>📋 Legacy ASCII Diagram (for reference)</summary>
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │                      HomeShield Rollback Hierarchy                    │
@@ -212,6 +305,7 @@ HomeShield provides four distinct levels of rollback depending on operational ne
 │ Level 4: Smart TV Rollback           │ 1-Click ADB restoration         │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+</details>
 
 ### Level 1: Instant Soft-Rollback (Diagnostic Pause)
 - **When to use:** User reports a website issue; immediate unblocking needed.

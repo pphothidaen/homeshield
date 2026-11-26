@@ -18,7 +18,7 @@
   <b>全网拦截电信诈骗、虚假贷款诱导下载、恶意广告劫持、网络赌博陷阱及智能电视/IoT隐私回传 —— 直接运行在光猫与宽带路由器中，无需额外购置硬件。</b>
 </p>
 
-[为什么选择 HomeShield？](#-现代网络犯罪危机为什么浏览器插件无法防范) • [四大核心防护支柱](#-4-大核心安全支柱) • [对比方案](#-全面对比-homeshield-vs-其他方案) • [实测效果 (82%)](#-实测效果前后对比-82-拦截率) • [系统架构](#-系统架构) • [快速开始](#-快速开始) • [规则来源与更新机制](#-威胁情报源与自动更新机制) • [应急回滚手册](docs/PLAYBOOK.md)
+[为什么选择 HomeShield？](#-现代网络犯罪危机为什么浏览器插件无法防范) • [四大核心防护支柱](#-4-大核心安全支柱) • [对比方案](#-全面对比-homeshield-vs-其他方案) • [实测效果 (97%)](#-实测效果前后对比-97-拦截率) • [系统架构](#-系统架构) • [快速开始](#-快速开始) • [规则来源与更新机制](#-威胁情报源与自动更新机制) • [应急回滚手册](docs/PLAYBOOK.md)
 
 <p align="center">
   🌐 <b>语言 / Languages:</b> <a href="README.md">English</a> | <a href="README.th.md">ภาษาไทย</a> | 简体中文 (Chinese) | <a href="README.ar.md">العربية</a> | <a href="README.es.md">Spanish</a> | <a href="README.vi.md">Tiếng Việt</a> | <a href="README.ja.md">日本語</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt.md">Português</a> | <a href="README.nl.md">Nederlands</a> | <a href="README.de.md">Deutsch</a> | <a href="README.uk.md">Українська</a> | <a href="README.uz.md">Oʻzbekcha</a> | <a href="README.fr.md">Français</a> | <a href="README.el.md">Ελληνικά</a> | <a href="README.he.md">עברית</a>
@@ -131,12 +131,12 @@
 
 ---
 
-## 📊 实测效果前后对比 (82% 拦截率)
+## 📊 实测效果前后对比 (97% 拦截率)
 
-使用独立第三方基准测试套件 [TurtleCute Ad Blocker Test suite](https://www.adblock.turtlecute.org/)（包含 130 个广告服务器、数据追踪、遥测与弹窗端点），通过 Kapture MCP 驱动 Chrome 浏览器自动化测试：
+使用独立第三方基准测试套件 [TurtleCute Ad Blocker Test suite](https://adblock.turtlecute.org/)（包含 130 个广告服务器、数据追踪、遥测与弹窗端点），通过 Kapture MCP 驱动 Chrome 浏览器自动化测试（2026-11-26 于 ZTE F6107A 重新截图）：
 
 <p align="center">
-  <img src="docs/images/verification-score.png" alt="HomeShield 82% TurtleCute Verification Score" width="100%" />
+  <img src="docs/images/verification-score.png" alt="HomeShield TurtleCute Verification Score" width="100%" />
 </p>
 
 <table align="center" width="100%">
@@ -151,15 +151,15 @@
       <sub>高达 122 个广告追踪器、遥测数据点无阻碍渗入内网。</sub>
     </td>
     <td align="center" width="50%" valign="top">
-      <img src="docs/images/after-active.png" alt="After HomeShield: 107 Blocked, 82% Score" width="100%" /><br/>
-      <b>得分: 82% (拦截 107 / 130 项)</b><br/>
-      <sub><b>107 个恶意与广告域名在网关处直接被拦截</b>（剩余 23 项属于仅能在浏览器端消除的 CSS 样式遮挡与行内脚本）。</sub>
+      <img src="docs/images/after-active.png" alt="After HomeShield: 126 Blocked, 97% Score" width="100%" /><br/>
+      <b>得分: 97% (拦截 126 / 130 项)</b><br/>
+      <sub><b>126 个恶意与广告域名在网关处直接被拦截</b>（仅剩 4 项：2 项 CSS 广告占位隐藏 + 2 项测试站点自身的 <code>ads.js</code>/<code>pagead.js</code> 脚本，DNS 层无法识别）。</sub>
     </td>
   </tr>
 </table>
 
 > [!NOTE]
-> **为什么 82% 是 DNS 网络层的理论极限拦截率：** DNS 沉洞拦截工作在网络 Layer 7。其余未阻断的项目属于前端页面的 DOM/CSS 空白占位隐藏，需配合浏览器插件如 uBlock Origin 进行样式剔除。所有通过网络发起的外部广告请求均已被降维拦截。
+> **为什么 97% 是 DNS 网络层的理论极限拦截率：** DNS 沉洞拦截工作在网络 Layer 7。其余未阻断的项目属于前端页面的 DOM/CSS 空白占位隐藏，需配合浏览器插件如 uBlock Origin 进行样式剔除。所有通过网络发起的外部广告请求均已被降维拦截。
 
 ---
 
