@@ -1,0 +1,85 @@
+```mermaid
+graph TD
+    %% Tier 0 Cloud Automation
+    subgraph Tier0["Tier 0 Cloud Automation (Daily at 23:00 UTC / 06:00 ICT Bangkok)"]
+        GH["GitHub Actions"]
+        Pull["Pull 29 Feeds (JoinSet Concurrent)"]
+        Dedup["Deduplicate"]
+        CDN["CDN (hosts.txt)"]
+    end
+
+    GH --> Pull --> Dedup --> CDN
+
+    %% Daily HTTP Pull
+    CDN -.->|"Daily HTTP Pull (86400s)"| Supervisor
+
+    %% Broadband Gateway Supervisor
+    subgraph Supervisor["Broadband Gateway Supervisor (Rust Daemon — Design-Pattern Optimized)"]
+        Step1["Step 1: Builder + Flyweight\nPre-size HashSet (300k+) & Arc-Whitelist (0 clone)"]
+        Step2["Step 2: Integrity & FNV-1a\n128 KB streaming buffer delta check -> Zero Flash"]
+        Step3["Step 3: Cache-Aside & Pool\nO(1) domain_count sidecar + reused String buffers"]
+        Step4["Step 4: Atomic Memory Swap\nSIGHUP to dnsmasq (<100 ms, zero dropped packets)"]
+    end
+
+    Step1 --> Step2 --> Step3 --> Step4
+
+    %% Styling
+    classDef tier0 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef supervisor fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef step fill:#f5f5f5,stroke:#616161,stroke-width:1px,stroke-dasharray: 5 5,color:#212121
+
+    class Tier0 tier0
+    class Supervisor supervisor
+    class Step1,Step2,Step3,Step4 step
+```
+
+**HomeShield Update Lifecycle — Zero-Downtime Daily Sync with Design Patterns**
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub Actions
+    participant CDN as Tier 0 CDN (GitHub Pages)
+    participant Daemon as Rust Daemon (Router)
+    participant DNS as dnsmasq
+
+    GH->>GH: Pull 29 feeds concurrently (JoinSet)
+    GH->>GH: Deduplicate 285k+ domains
+    GH->>GH: Apply whitelist
+    GH->>CDN: Publish hosts.txt to GitHub Pages
+
+    Daemon->>CDN: Daily HTTP GET (86400s interval)
+    CDN-->>Daemon: hosts.txt + ETag/Last-Modified
+
+    alt Content unchanged (FNV-1a match)
+        Daemon->>Daemon: Skip Flash write, skip dnsmasq reload
+    else Content changed
+        Daemon->>Daemon: Builder + Flyweight (pre-size HashSet)
+        Daemon->>Daemon: Integrity check + FNV-1a streaming delta
+        Daemon->>Daemon: Cache-Aside + Pool (O(1) sidecar)
+        Daemon->>Daemon: Atomic memory swap to /var/tmp/hosts
+        Daemon->>DNS: SIGHUP (reload < 100 ms, zero dropped packets)
+    end
+```
+
+---
+
+### Design Pattern Mapping
+
+| Step | Pattern | Implementation | Benefit |
+|------|---------|----------------|---------|
+| **1** | Builder + Flyweight | `HashSet::with_capacity(300_000)`, `Arc<Whitelist>` | Zero allocations, single whitelist reference |
+| **2** | Integrity + Streaming Hash | 128 KB buffer, FNV-1a 64-bit | Zero Flash wear (skip write if unchanged) |
+| **3** | Cache-Aside + Object Pool | `domain_count` sidecar, `String::with_capacity()` | O(1) stats, buffer reuse |
+| **4** | Atomic Swap + Signal | `rename()` + `SIGHUP` to dnsmasq | < 100 ms, zero packet loss |
+
+---
+
+### Manual Update Trigger
+
+```bash
+# Via Rust CLI:
+cargo run --release --manifest-path rust/Cargo.toml -p homeshield-cli -- update --ip 192.168.1.1
+
+# Via Python CLI:
+python3 homeshield.py update --ip 192.168.1.1
+```

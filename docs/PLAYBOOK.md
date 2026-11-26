@@ -78,7 +78,7 @@ python3 homeshield.py status --ip 192.168.1.1
 *Expected Output:*
 ```text
 STATUS: ACTIVE
-BLOCKED_DOMAINS: 285865
+BLOCKED_DOMAINS: 552276
 LAST_UPDATE: 2026-11-25 03:06:17
 NEXT_UPDATE: IN 0d 13h (autonomous)
 ROUTER_AUTONOMY: FULLY_AUTONOMOUS (Rust Daemon PID 14775)
@@ -122,20 +122,44 @@ Or directly inside the router terminal:
 | **PAUSED** | `toggle` | **ACTIVE** | Sinkholed to `0.0.0.0` & `::` | `< 100 ms` | Running (Timer intact) |
 
 ### Technical Mechanism:
-```text
-[User Command: toggle]
-        │
-        ├──▶ Check current /var/tmp/adblock.state
-        │
-        ├──▶ IF ACTIVE:
-        │    1. Clear /var/tmp/hosts (Write empty stub hosts file)
-        │    2. Update state to PAUSED
-        │    3. Send SIGHUP to dnsmasq (Reloads in memory instantly)
-        │
-        └──▶ IF PAUSED:
-             1. Copy /userconfig/adblock.hosts -> /var/tmp/hosts
-             2. Update state to ACTIVE
-             3. Send SIGHUP to dnsmasq (Dual-stack sinkholing restored)
+
+```mermaid
+flowchart TD
+    CMD["🖥️ User Command: toggle\n(homeshield toggle --ip 192.168.1.1)"]
+    CHECK["🔍 Check /var/tmp/adblock.state"]
+    CMD --> CHECK
+
+    CHECK -->|"State = ACTIVE"| ACT_1
+    CHECK -->|"State = PAUSED"| PAU_1
+
+    subgraph ActiveFlow["🔴 ACTIVE → PAUSED"]
+        ACT_1["1️⃣ Clear /var/tmp/hosts\n(Write empty stub hosts file)"]
+        ACT_2["2️⃣ Update state → PAUSED"]
+        ACT_3["3️⃣ Send SIGHUP to dnsmasq\n(Reloads instantly — zero dropped packets)"]
+        ACT_1 --> ACT_2 --> ACT_3
+    end
+
+    subgraph PausedFlow["🟢 PAUSED → ACTIVE"]
+        PAU_1["1️⃣ Copy /userconfig/adblock.hosts\n→ /var/tmp/hosts"]
+        PAU_2["2️⃣ Update state → ACTIVE"]
+        PAU_3["3️⃣ Send SIGHUP to dnsmasq\n(Dual-stack sinkholing restored)"]
+        PAU_1 --> PAU_2 --> PAU_3
+    end
+
+    ACT_3 --> RESULT_P["⏸️ DNS pass-through\ndoubleclick.net → 142.250.66.110\n(Transition < 100 ms)"]
+    PAU_3 --> RESULT_A["🛡️ DNS sinkholed\ndoubleclick.net → 0.0.0.0 & ::\n(Transition < 100 ms)"]
+
+    classDef cmdStyle fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef checkStyle fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#4a148c
+    classDef activeStyle fill:#ffebee,stroke:#c62828,stroke-width:1px,color:#b71c1c
+    classDef pausedStyle fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px,color:#1b5e20
+    classDef resultStyle fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+
+    class CMD cmdStyle
+    class CHECK checkStyle
+    class ACT_1,ACT_2,ACT_3 activeStyle
+    class PAU_1,PAU_2,PAU_3 pausedStyle
+    class RESULT_P,RESULT_A resultStyle
 ```
 
 ---
@@ -204,52 +228,52 @@ HomeShield provides four distinct levels of rollback depending on operational ne
 
 ```mermaid
 graph TD
-    %% Rollback Hierarchy
-    subgraph Rollback["HomeShield Rollback Hierarchy"]
-        L1["Level 1: Soft-Rollback (Toggle)\nInstant pause (< 100 ms)"]
-        L2["Level 2: Engine Switch (Rust→Shell)\nZero downtime fallback (< 5 s)"]
-        L3["Level 3: Full Gateway Revert\nClean uninstall & factory state (< 30 s)"]
-        L4["Level 4: Smart TV Rollback\n1-Click ADB restoration (< 10 s)"]
+    %% Rollback Hierarchy Overview
+    subgraph Rollback["🔄 HomeShield 4-Tier Rollback Hierarchy"]
+        L1["🟢 Level 1: Soft-Rollback (Toggle)\nInstant pause — < 100 ms"]
+        L2["🟡 Level 2: Engine Switch (Rust → Shell)\nZero downtime fallback — < 5 s"]
+        L3["🔴 Level 3: Full Gateway Revert\nClean uninstall & factory state — < 30 s"]
+        L4["🔵 Level 4: Smart TV Rollback\n1-Click ADB restoration — < 10 s"]
     end
 
     %% Level 1 Details
-    subgraph L1_Detail["Level 1: Instant Soft-Rollback"]
-        L1_When["When: User reports website issue;\nimmediate unblocking needed"]
-        L1_Action["Action: python3 homeshield.py toggle\n--ip 192.168.1.1"]
-        L1_Time["Time: < 1 second"]
-        L1_Impact["Impact: Reverts DNS to unblocked\npass-through; daemon alive"]
+    subgraph L1_Detail["🟢 Level 1: Instant Soft-Rollback"]
+        L1_When["⚡ When: User reports website issue;\nimmediate unblocking needed"]
+        L1_Action["💻 Action: python3 homeshield.py toggle\n--ip 192.168.1.1"]
+        L1_Time["⏱️ Time: < 1 second"]
+        L1_Impact["✅ Impact: Reverts DNS to unblocked\npass-through; daemon alive"]
     end
 
     %% Level 2 Details
-    subgraph L2_Detail["Level 2: Engine Fallback Rollback"]
-        L2_When["When: Daemon kernel panic or\narchitecture warning"]
-        L2_Action["Action: python3 homeshield.py deploy\n--ip 192.168.1.1 --engine shell"]
-        L2_Time["Time: < 5 seconds"]
-        L2_Impact["Impact: Kills Rust binary, activates\nadblock.sh loop + watchdog.sh"]
+    subgraph L2_Detail["🟡 Level 2: Engine Fallback Rollback"]
+        L2_When["⚡ When: Daemon kernel panic or\narchitecture warning"]
+        L2_Action["💻 Action: python3 homeshield.py deploy\n--ip 192.168.1.1 --engine shell"]
+        L2_Time["⏱️ Time: < 5 seconds"]
+        L2_Impact["✅ Impact: Kills Rust binary, activates\nadblock.sh loop + watchdog.sh"]
     end
 
     %% Level 3 Details
-    subgraph L3_Detail["Level 3: Complete Gateway Rollback"]
-        L3_When["When: Gateway firmware update,\nISP maintenance, or permanent removal"]
-        L3_Action["Action: python3 homeshield.py uninstall\n--ip 192.168.1.1"]
-        L3_Time["Time: < 30 seconds"]
-        L3_Impact["Impact: 100% factory state restored;\nzero leftover files on Flash ROM"]
+    subgraph L3_Detail["🔴 Level 3: Complete Gateway Rollback"]
+        L3_When["⚡ When: Gateway firmware update,\nISP maintenance, or permanent removal"]
+        L3_Action["💻 Action: python3 homeshield.py uninstall\n--ip 192.168.1.1"]
+        L3_Time["⏱️ Time: < 30 seconds"]
+        L3_Impact["✅ Impact: 100% factory state restored;\nzero leftover files on Flash ROM"]
     end
 
     %% Level 3 Manual Emergency
-    subgraph L3_Manual["Level 3: Manual Emergency (Telnet)"]
+    subgraph L3_Manual["🚨 Level 3: Manual Emergency (Telnet)"]
         M1["1. killall homeshield-daemon\n    watchdog.sh adblock.sh"]
-        M2["2. iptables/ip6tables -D\n    (flush all DNS redirect rules)"]
+        M2["2. iptables/ip6tables -D\n    flush all DNS redirect rules"]
         M3["3. echo '127.0.0.1 localhost'\n    > /var/tmp/hosts\n    killall -HUP dnsmasq"]
         M4["4. rm -rf /userconfig/homeshield-*\n    /userconfig/adblock.*\n    /userconfig/watchdog.sh\n    /userconfig/whitelist.txt"]
     end
 
     %% Level 4 Details
-    subgraph L4_Detail["Level 4: Device & Smart TV Rollback"]
-        L4_When["When: Debloated TV/device package\ncauses unwanted UI side-effect"]
-        L4_Action1["Auto: sh backups/restore_<ip>_<ts>.sh"]
-        L4_Action2["CLI: cargo run -- device restore\n--target <device_ip>"]
-        L4_Impact["Impact: Re-enables all disabled\nAndroid packages to original state"]
+    subgraph L4_Detail["🔵 Level 4: Device & Smart TV Rollback"]
+        L4_When["⚡ When: Debloated TV/device package\ncauses unwanted UI side-effect"]
+        L4_Action1["🤖 Auto: sh backups/restore_ip_ts.sh"]
+        L4_Action2["💻 CLI: cargo run -- device restore\n--target device_ip"]
+        L4_Impact["✅ Impact: Re-enables all disabled\nAndroid packages to original state"]
     end
 
     %% Connections
@@ -275,12 +299,12 @@ graph TD
     L4 --> L4_Impact
 
     %% Styling
-    classDef hierarchy fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef level1 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    classDef level2 fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef level3 fill:#ffebee,stroke:#c62828,stroke-width:2px
-    classDef level4 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef manual fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+    classDef hierarchy fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#4a148c
+    classDef level1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef level2 fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef level3 fill:#ffebee,stroke:#b71c1c,stroke-width:2px,color:#7f0000
+    classDef level4 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef manual fill:#fafafa,stroke:#757575,stroke-width:1px,stroke-dasharray: 5 5,color:#424242
 
     class Rollback hierarchy
     class L1,L1_When,L1_Action,L1_Time,L1_Impact level1
@@ -291,21 +315,6 @@ graph TD
 ```
 
 **Rollback diagram also available as standalone file:** [`docs/rollback-hierarchy.mermaid`](docs/rollback-hierarchy.mermaid)
-
-<details>
-<summary>📋 Legacy ASCII Diagram (for reference)</summary>
-
-```text
-┌────────────────────────────────────────────────────────────────────────┐
-│                      HomeShield Rollback Hierarchy                    │
-├────────────────────────────────────────────────────────────────────────┤
-│ Level 1: Soft-Rollback (Toggle)      │ Instant pause (< 100 ms)        │
-│ Level 2: Engine Switch (Rust->Shell) │ Zero downtime fallback (< 5 s)  │
-│ Level 3: Full Gateway Revert         │ Clean uninstall & factory state │
-│ Level 4: Smart TV Rollback           │ 1-Click ADB restoration         │
-└────────────────────────────────────────────────────────────────────────┘
-```
-</details>
 
 ### Level 1: Instant Soft-Rollback (Diagnostic Pause)
 - **When to use:** User reports a website issue; immediate unblocking needed.

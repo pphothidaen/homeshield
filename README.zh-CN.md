@@ -167,51 +167,255 @@
 
 HomeShield 采用**云端预编译与边缘零跳数拦截的解耦架构**：
 
-```text
-               ┌────────────────────────────────────────────────────────┐
-               │              Tier 0 云端边缘 (GitHub Actions 每日任务)  │
-               │  - 聚合 29 大权威情报源（全网广告/泰东南亚/全终端IoT遥测）│
-               │  - 过滤清洗 285,000+ 域名并应用白名单                   │
-               │  - 发布单文件 hosts.txt 至 GitHub Pages 高速 CDN       │
-               └───────────────────────────┬────────────────────────────┘
-                                           │ 每日拉取 (86400s)
-                                           ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│  宽带网关 / 路由器 (中兴 ZTE、华为、华硕、OpenWrt / ARMv7 / dnsmasq)                   │
-│                                                                                        │
-│  ┌─────────────────────────┐     ┌──────────────────────────────────────────────────┐  │
-│  │    homeshield-daemon    │     │  iptables & ip6tables 防绕过规则                  │  │
-│  │   - 408 kB VmRSS Rust   │────▶│  - IPv4: NAT 重定向 UDP/TCP 53 -> 本地 dnsmasq   │  │
-│  │   - FNV-1a 闪存保护     │     │  - IPv6: 转发拒绝 53 / 853 端口 (封堵 DoT/DoH)  │  │
-│  │   - 5 秒异常快速自愈    │     └────────────────────────┬─────────────────────────┘  │
-│  └─────────────────────────┘                              │                            │
-│                                                           ▼                            │
-│                                          ┌──────────────────────────────────┐          │
-│                                          │  dnsmasq 双栈 DNS 沉洞           │          │
-│                                          │  - 恶意域名 -> 0.0.0.0 与 ::     │          │
-│                                          │  - 白名单域名 -> 正常转发 WAN 口  │          │
-│                                          └──────────────────────────────────┘          │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │
-               ┌────────────────────────────┴────────────────────────────┐
-               ▼                                                         ▼
-    ┌──────────────────────┐                                  ┌──────────────────────┐
-    │  手机与 PC 客户端    │                                  │  智能电视 / Android  │
-    │  - iOS, Android, Mac │                                  │  - 索尼, TCL, 小米等 │
-    │  - 无需任何设置与 App│                                  │  - 彻底阻断设备遥测  │
-    └──────────────────────┘                                  └──────────┬───────────┘
-                                                                         │
-                                 ┌───────────────────────────────────────┴───────────┐
-                                 │ CleanYourTV 智能电视伴侣工具 (工作站执行)          │
-                                 │  - DHCP 表全自动发现电视设备                      │
-                                 │  - 批量冻结 1,100+ 预装广告与遥测应用             │
-                                 │  - 自动备份与一键原样回滚脚本生成                 │
-                                 └───────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    %% Tier 0 Cloud Edge
+    subgraph Tier0["☁️ Tier 0 云端边缘 — GitHub Actions 每日任务"]
+        T0A["📥 聚合 29 大权威情报源\n全网广告 / 泰东南亚 / 全终端 IoT 遥测"]
+        T0B["🔄 过滤清洗 285,000+ 域名\n并应用白名单"]
+        T0C["🚀 发布 hosts.txt\n至 GitHub Pages 高速 CDN"]
+        T0A --> T0B --> T0C
+    end
+
+    %% Daily Pull
+    Tier0 -.->|"⬇️ 每日拉取 (86400s)"| Router
+
+    %% Router/Gateway
+    subgraph Router["🌐 宽带网关 / 路由器 — 中兴 ZTE · 华为 · 华硕 · OpenWrt / ARMv7 / dnsmasq"]
+        subgraph Daemon["⚙️ homeshield-daemon"]
+            D1["408 kB VmRSS Rust"]
+            D2["FNV-1a 闪存保护"]
+            D3["5 秒异常快速自愈"]
+        end
+
+        subgraph IPTables["🔒 iptables & ip6tables 防绕过规则"]
+            IP4["IPv4: NAT 重定向\nUDP/TCP 53 → 本地 dnsmasq"]
+            IP6["IPv6: 转发拒绝\n53 / 853 端口 (封堵 DoT/DoH)"]
+        end
+
+        subgraph Dnsmasq["🛡️ dnsmasq 双栈 DNS 沉洞"]
+            DS1["🚫 恶意域名 → 0.0.0.0 与 ::"]
+            DS2["✅ 白名单域名 → 正常转发 WAN 口"]
+        end
+    end
+
+    %% Client Devices
+    subgraph Clients["📱 受保护终端设备"]
+        Mobile["💻 手机与 PC 客户端\niOS · Android · Mac\n无需任何设置与 App"]
+        SmartTV["📺 智能电视 / Android TV\n索尼 · TCL · 小米等\n彻底阻断设备遥测"]
+    end
+
+    %% CleanYourTV Companion
+    subgraph Companion["🖥️ CleanYourTV 智能电视伴侣工具\n(工作站执行)"]
+        CYT1["🔍 DHCP 表全自动发现电视设备"]
+        CYT2["🧹 批量冻结 1,100+ 预装广告与遥测应用"]
+        CYT3["💾 自动备份与一键原样回滚脚本生成"]
+    end
+
+    %% Connections
+    Daemon -->|"🔐 防绕过规则强制执行"| IPTables
+    IPTables -->|"↩️ DNS 流量重定向"| Dnsmasq
+    Dnsmasq -->|"沉洞 / 转发"| Mobile
+    Dnsmasq -->|"沉洞 / 转发"| SmartTV
+    SmartTV -.->|"📡 ADB over LAN"| Companion
+
+    %% Styling
+    classDef tier0 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef router fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef daemon fill:#fff3e0,stroke:#ef6c00,stroke-width:1px,color:#bf360c
+    classDef client fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef companion fill:#fce4ec,stroke:#ad1457,stroke-width:2px,color:#880e4f
+
+    class Tier0 tier0
+    class Router router
+    class Daemon,IPTables,Dnsmasq daemon
+    class Mobile,SmartTV client
+    class Companion companion
+```
+
+---
+
+### Rollback Hierarchy Diagram (回滚层级图)
+
+```mermaid
+graph TD
+    subgraph Rollback["🔄 HomeShield 4-Tier Rollback Hierarchy"]
+        L1["🟢 Level 1: Soft-Rollback (Toggle)\nInstant pause — < 100 ms"]
+        L2["🟡 Level 2: Engine Switch (Rust → Shell)\nZero downtime fallback — < 5 s"]
+        L3["🔴 Level 3: Full Gateway Revert\nClean uninstall & factory state — < 30 s"]
+        L4["🔵 Level 4: Smart TV Rollback\n1-Click ADB restoration — < 10 s"]
+    end
+
+    subgraph L1_Detail["🟢 Level 1: Instant Soft-Rollback"]
+        L1_When["⚡ When: User reports website issue;\nimmediate unblocking needed"]
+        L1_Action["💻 Action: python3 homeshield.py toggle\n--ip 192.168.1.1"]
+        L1_Time["⏱️ Time: < 1 second"]
+        L1_Impact["✅ Impact: Reverts DNS to unblocked\npass-through; daemon alive"]
+    end
+
+    subgraph L2_Detail["🟡 Level 2: Engine Fallback Rollback"]
+        L2_When["⚡ When: Daemon kernel panic or\narchitecture warning"]
+        L2_Action["💻 Action: python3 homeshield.py deploy\n--ip 192.168.1.1 --engine shell"]
+        L2_Time["⏱️ Time: < 5 seconds"]
+        L2_Impact["✅ Impact: Kills Rust binary, activates\nadblock.sh loop + watchdog.sh"]
+    end
+
+    subgraph L3_Detail["🔴 Level 3: Complete Gateway Rollback"]
+        L3_When["⚡ When: Gateway firmware update,\nISP maintenance, or permanent removal"]
+        L3_Action["💻 Action: python3 homeshield.py uninstall\n--ip 192.168.1.1"]
+        L3_Time["⏱️ Time: < 30 seconds"]
+        L3_Impact["✅ Impact: 100% factory state restored;\nzero leftover files on Flash ROM"]
+    end
+
+    subgraph L3_Manual["🚨 Level 3: Manual Emergency (Telnet)"]
+        M1["1. killall homeshield-daemon\n    watchdog.sh adblock.sh"]
+        M2["2. iptables/ip6tables -D\n    flush all DNS redirect rules"]
+        M3["3. echo '127.0.0.1 localhost'\n    > /var/tmp/hosts\n    killall -HUP dnsmasq"]
+        M4["4. rm -rf /userconfig/homeshield-*\n    /userconfig/adblock.*\n    /userconfig/watchdog.sh\n    /userconfig/whitelist.txt"]
+    end
+
+    subgraph L4_Detail["🔵 Level 4: Device & Smart TV Rollback"]
+        L4_When["⚡ When: Debloated TV/device package\ncauses unwanted UI side-effect"]
+        L4_Action1["🤖 Auto: sh backups/restore_ip_ts.sh"]
+        L4_Action2["💻 CLI: cargo run -- device restore\n--target device_ip"]
+        L4_Impact["✅ Impact: Re-enables all disabled\nAndroid packages to original state"]
+    end
+
+    L1 --> L1_When
+    L1 --> L1_Action
+    L1 --> L1_Time
+    L1 --> L1_Impact
+    L2 --> L2_When
+    L2 --> L2_Action
+    L2 --> L2_Time
+    L2 --> L2_Impact
+    L3 --> L3_When
+    L3 --> L3_Action
+    L3 --> L3_Time
+    L3 --> L3_Impact
+    L3_Detail --> L3_Manual
+    L4 --> L4_When
+    L4 --> L4_Action1
+    L4 --> L4_Action2
+    L4 --> L4_Impact
+
+    classDef hierarchy fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#4a148c
+    classDef level1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef level2 fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef level3 fill:#ffebee,stroke:#b71c1c,stroke-width:2px,color:#7f0000
+    classDef level4 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef manual fill:#fafafa,stroke:#757575,stroke-width:1px,stroke-dasharray: 5 5,color:#424242
+
+    class Rollback hierarchy
+    class L1,L1_When,L1_Action,L1_Time,L1_Impact level1
+    class L2,L2_When,L2_Action,L2_Time,L2_Impact level2
+    class L3,L3_When,L3_Action,L3_Time,L3_Impact,L3_Detail level3
+    class L3_Manual,M1,M2,M3,M4 manual
+    class L4,L4_When,L4_Action1,L4_Action2,L4_Impact level4
+```
+
+---
+
+### Update Lifecycle Diagram (更新生命周期图)
+
+```mermaid
+graph TD
+    subgraph Tier0["☁️ Tier 0 Cloud Automation — Daily at 23:00 UTC / 06:00 ICT Bangkok"]
+        GH["🤖 GitHub Actions"]
+        Pull["📥 Pull 29 Feeds\n(JoinSet Concurrent)"]
+        Dedup["🔄 Deduplicate\n285,865+ unique domains"]
+        CDN["🚀 CDN publish\nhosts.txt on GitHub Pages"]
+        GH --> Pull --> Dedup --> CDN
+    end
+
+    CDN -.->|⬇️ Daily HTTP Pull (86400s)| Supervisor
+
+    subgraph Supervisor["⚙️ Broadband Gateway Supervisor — Rust Daemon (Design-Pattern Optimized)"]
+        Step1["🏗️ Step 1: Builder + Flyweight\nPre-size HashSet 300k+ & Arc-Whitelist — 0 clone"]
+        Step2["🔐 Step 2: Integrity & FNV-1a\n128 KB streaming buffer delta check → Zero Flash Write"]
+        Step3["📊 Step 3: Cache-Aside & Pool\nO(1) domain_count sidecar + reused String buffers"]
+        Step4["⚡ Step 4: Atomic Memory Swap\nSIGHUP to dnsmasq — < 100 ms, zero dropped packets"]
+        Step1 --> Step2 --> Step3 --> Step4
+    end
+
+    classDef tier0 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef supervisor fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef step fill:#f5f5f5,stroke:#616161,stroke-width:1px,stroke-dasharray: 5 5,color:#212121
+
+    class Tier0 tier0
+    class Supervisor supervisor
+    class Step1,Step2,Step3,Step4 step
+```
+
+---
+
+### Rollback Sequence Diagram (回滚序列图)
+
+```mermaid
+sequenceDiagram
+    participant User as Administrator
+    participant CLI as homeshield.py / CLI
+    participant Router as Gateway Router
+    participant TV as Smart TV / Device
+
+    User->>CLI: python3 homeshield.py toggle --ip 192.168.1.1
+    CLI->>Router: Atomic swap /var/tmp/hosts → empty
+    CLI->>Router: SIGHUP dnsmasq
+    Router-->>User: PAUSED (< 100 ms)
+
+    User->>CLI: python3 homeshield.py deploy --engine shell
+    CLI->>Router: kill homeshield-daemon
+    CLI->>Router: Start adblock.sh loop + watchdog.sh
+    Router-->>User: Shell engine active (< 5 s)
+
+    User->>CLI: python3 homeshield.py uninstall
+    CLI->>Router: Kill processes, flush iptables, restore hosts
+    CLI->>Router: rm -rf /userconfig/homeshield-*
+    Router-->>User: Factory state (< 30 s)
+
+    User->>Router: telnet 192.168.1.1
+    User->>Router: killall + iptables -D + restore hosts + rm -rf
+    Router-->>User: Factory state
+
+    User->>CLI: cargo run -- device restore --target 192.168.1.50
+    CLI->>TV: ADB: pm enable <packages...>
+    TV-->>User: All packages restored (< 10 s)
+```
+
+---
+
+### Update Sequence Diagram (更新序列图)
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub Actions
+    participant CDN as Tier 0 CDN (GitHub Pages)
+    participant Daemon as Rust Daemon (Router)
+    participant DNS as dnsmasq
+
+    GH->>GH: Pull 29 feeds concurrently (JoinSet)
+    GH->>GH: Deduplicate 285k+ domains
+    GH->>GH: Apply whitelist
+    GH->>CDN: Publish hosts.txt to GitHub Pages
+
+    Daemon->>CDN: Daily HTTP GET (86400s interval)
+    CDN-->>Daemon: hosts.txt + ETag/Last-Modified
+
+    alt Content unchanged (FNV-1a match)
+        Daemon->>Daemon: Skip Flash write, skip dnsmasq reload
+    else Content changed
+        Daemon->>Daemon: Builder + Flyweight (pre-size HashSet)
+        Daemon->>Daemon: Integrity check + FNV-1a streaming delta
+        Daemon->>Daemon: Cache-Aside + Pool (O(1) sidecar)
+        Daemon->>Daemon: Atomic memory swap to /var/tmp/hosts
+        Daemon->>DNS: SIGHUP (reload < 100 ms, zero dropped packets)
+    end
 ```
 
 ---
 
 ## 🛠️ 快速开始
+
 
 ### 1. 前置准备
 - 拥有 Rust 工具链 (`cargo`) 的管理机 (macOS / Linux / Windows)，或 Python 3.9+ 环境

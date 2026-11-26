@@ -175,114 +175,117 @@ HomeShield employs a **Decoupled, Zero-Hop Edge Architecture**. The router handl
 ```mermaid
 graph TD
     %% Tier 0 Cloud Edge
-    subgraph Tier0["Tier 0 Cloud Edge (GitHub Actions)"]
-        T0A["Pre-compiles 29 Live Feeds\n(Ad/Scam/Thai/IoT/PC)"]
-        T0B["Deduplicates 285,865+ domains\n& applies Whitelist"]
-        T0C["Publishes daily to Tier 0 CDN\n(GitHub Pages)"]
+    subgraph Tier0["☁️ Tier 0 Cloud Edge — GitHub Actions Daily"]
+        T0A["📥 Pull 29 Live Feeds\nAd / Scam / Thai-SEA / IoT / PC Telemetry"]
+        T0B["🔄 Deduplicate 285,865+ domains\n& apply Whitelist filter"]
+        T0C["🚀 Publish to Tier 0 CDN\nGitHub Pages — hosts.txt"]
+        T0A --> T0B --> T0C
     end
 
     %% Daily Pull
-    Tier0 -.->|Daily Pull (86400s)| Router
+    Tier0 -.->|"⬇️ Daily HTTP Pull (86400s)"| Router
 
     %% Router/Gateway
-    subgraph Router["Broadband Gateway / Router\n(ZTE, Huawei, ASUS, OpenWrt / ARMv7 / dnsmasq)"]
-        subgraph Daemon["homeshield-daemon"]
+    subgraph Router["🌐 Broadband Gateway / Router — ZTE · Huawei · ASUS · OpenWrt / ARMv7 / dnsmasq"]
+        subgraph Daemon["⚙️ homeshield-daemon"]
             D1["408 kB VmRSS Rust"]
             D2["FNV-1a Flash Delta"]
             D3["5s Self-Healing"]
         end
 
-        subgraph IPTables["iptables & ip6tables Anti-Bypass Rules"]
-            IP4["IPv4: NAT REDIRECT\nUDP/TCP 53 -> dnsmasq"]
+        subgraph IPTables["🔒 iptables & ip6tables Anti-Bypass Rules"]
+            IP4["IPv4: NAT REDIRECT\nUDP/TCP 53 → dnsmasq"]
             IP6["IPv6: FORWARD REJECT\nport 53 / 853 (Anti-DoT)"]
         end
 
-        subgraph Dnsmasq["dnsmasq Dual-Stack Sinkhole"]
-            DS1["Blocks -> 0.0.0.0 & ::"]
-            DS2["Whitelist -> Forward to WAN"]
+        subgraph Dnsmasq["🛡️ dnsmasq Dual-Stack Sinkhole"]
+            DS1["🚫 Blocked → 0.0.0.0 & ::"]
+            DS2["✅ Whitelisted → Forward to WAN"]
         end
     end
 
     %% Client Connections
-    subgraph Clients["Client Devices"]
-        Mobile["Mobile & PC Clients\n- iOS, Android, Mac\n- Zero Configuration"]
-        SmartTV["Smart TV / Android\n- Sony, TCL, Mi TV\n- Telemetry Blocked"]
+    subgraph Clients["📱 Protected Client Devices"]
+        Mobile["💻 Mobile & PC Clients\niOS · Android · Mac\nZero Configuration"]
+        SmartTV["📺 Smart TV / Android TV\nSony · TCL · Mi TV\nTelemetry Blocked"]
     end
 
     %% CleanYourTV Companion
-    subgraph Companion["CleanYourTV Companion (Workstation Python CLI)"]
-        CYT1["Zero-touch DHCP discovery"]
-        CYT2["Debloats 1,100+ telemetry\n& ad packages"]
-        CYT3["Auto-creates backup\n& standalone rollback"]
+    subgraph Companion["🖥️ CleanYourTV Companion — Workstation Python CLI"]
+        CYT1["🔍 Zero-touch DHCP discovery"]
+        CYT2["🧹 Debloats 1,100+ telemetry & ad packages"]
+        CYT3["💾 Auto-creates backup & standalone rollback"]
     end
 
     %% Connections
-    Daemon -->|"Anti-bypass\nenforcement"| IPTables
-    IPTables -->|"DNS redirection"| Dnsmasq
+    Daemon -->|"🔐 Anti-bypass enforcement"| IPTables
+    IPTables -->|"↩️ DNS redirection"| Dnsmasq
     Dnsmasq -->|"Sinkhole / Forward"| Mobile
     Dnsmasq -->|"Sinkhole / Forward"| SmartTV
-    SmartTV -.->|ADB over LAN| Companion
+    SmartTV -.->|"📡 ADB over LAN"| Companion
 
     %% Styling
-    classDef tier0 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef router fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef client fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    classDef companion fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef tier0 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef router fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef daemon fill:#fff3e0,stroke:#ef6c00,stroke-width:1px,color:#bf360c
+    classDef client fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef companion fill:#fce4ec,stroke:#ad1457,stroke-width:2px,color:#880e4f
 
     class Tier0 tier0
-    class Router,Daemon,IPTables,Dnsmasq router
+    class Router router
+    class Daemon,IPTables,Dnsmasq daemon
     class Mobile,SmartTV client
     class Companion companion
 ```
 
 ```mermaid
 graph TD
-    %% Rollback Hierarchy
-    subgraph Rollback["HomeShield Rollback Hierarchy"]
-        L1["Level 1: Soft-Rollback (Toggle)\nInstant pause (< 100 ms)"]
-        L2["Level 2: Engine Switch (Rust→Shell)\nZero downtime fallback (< 5 s)"]
-        L3["Level 3: Full Gateway Revert\nClean uninstall & factory state (< 30 s)"]
-        L4["Level 4: Smart TV Rollback\n1-Click ADB restoration (< 10 s)"]
+    %% Rollback Hierarchy Overview
+    subgraph Rollback["🔄 HomeShield 4-Tier Rollback Hierarchy"]
+        L1["🟢 Level 1: Soft-Rollback (Toggle)\nInstant pause — < 100 ms"]
+        L2["🟡 Level 2: Engine Switch (Rust → Shell)\nZero downtime fallback — < 5 s"]
+        L3["🔴 Level 3: Full Gateway Revert\nClean uninstall & factory state — < 30 s"]
+        L4["🔵 Level 4: Smart TV Rollback\n1-Click ADB restoration — < 10 s"]
     end
 
     %% Level 1 Details
-    subgraph L1_Detail["Level 1: Instant Soft-Rollback"]
-        L1_When["When: User reports website issue;\nimmediate unblocking needed"]
-        L1_Action["Action: python3 homeshield.py toggle\n--ip 192.168.1.1"]
-        L1_Time["Time: < 1 second"]
-        L1_Impact["Impact: Reverts DNS to unblocked\npass-through; daemon alive"]
+    subgraph L1_Detail["🟢 Level 1: Instant Soft-Rollback"]
+        L1_When["⚡ When: User reports website issue;\nimmediate unblocking needed"]
+        L1_Action["💻 Action: python3 homeshield.py toggle\n--ip 192.168.1.1"]
+        L1_Time["⏱️ Time: < 1 second"]
+        L1_Impact["✅ Impact: Reverts DNS to unblocked\npass-through; daemon alive"]
     end
 
     %% Level 2 Details
-    subgraph L2_Detail["Level 2: Engine Fallback Rollback"]
-        L2_When["When: Daemon kernel panic or\narchitecture warning"]
-        L2_Action["Action: python3 homeshield.py deploy\n--ip 192.168.1.1 --engine shell"]
-        L2_Time["Time: < 5 seconds"]
-        L2_Impact["Impact: Kills Rust binary, activates\nadblock.sh loop + watchdog.sh"]
+    subgraph L2_Detail["🟡 Level 2: Engine Fallback Rollback"]
+        L2_When["⚡ When: Daemon kernel panic or\narchitecture warning"]
+        L2_Action["💻 Action: python3 homeshield.py deploy\n--ip 192.168.1.1 --engine shell"]
+        L2_Time["⏱️ Time: < 5 seconds"]
+        L2_Impact["✅ Impact: Kills Rust binary, activates\nadblock.sh loop + watchdog.sh"]
     end
 
     %% Level 3 Details
-    subgraph L3_Detail["Level 3: Complete Gateway Rollback"]
-        L3_When["When: Gateway firmware update,\nISP maintenance, or permanent removal"]
-        L3_Action["Action: python3 homeshield.py uninstall\n--ip 192.168.1.1"]
-        L3_Time["Time: < 30 seconds"]
-        L3_Impact["Impact: 100% factory state restored;\nzero leftover files on Flash ROM"]
+    subgraph L3_Detail["🔴 Level 3: Complete Gateway Rollback"]
+        L3_When["⚡ When: Gateway firmware update,\nISP maintenance, or permanent removal"]
+        L3_Action["💻 Action: python3 homeshield.py uninstall\n--ip 192.168.1.1"]
+        L3_Time["⏱️ Time: < 30 seconds"]
+        L3_Impact["✅ Impact: 100% factory state restored;\nzero leftover files on Flash ROM"]
     end
 
     %% Level 3 Manual Emergency
-    subgraph L3_Manual["Level 3: Manual Emergency (Telnet)"]
+    subgraph L3_Manual["🚨 Level 3: Manual Emergency (Telnet)"]
         M1["1. killall homeshield-daemon\n    watchdog.sh adblock.sh"]
-        M2["2. iptables/ip6tables -D\n    (flush all DNS redirect rules)"]
+        M2["2. iptables/ip6tables -D\n    flush all DNS redirect rules"]
         M3["3. echo '127.0.0.1 localhost'\n    > /var/tmp/hosts\n    killall -HUP dnsmasq"]
         M4["4. rm -rf /userconfig/homeshield-*\n    /userconfig/adblock.*\n    /userconfig/watchdog.sh\n    /userconfig/whitelist.txt"]
     end
 
     %% Level 4 Details
-    subgraph L4_Detail["Level 4: Device & Smart TV Rollback"]
-        L4_When["When: Debloated TV/device package\ncauses unwanted UI side-effect"]
-        L4_Action1["Auto: sh backups/restore_<ip>_<ts>.sh"]
-        L4_Action2["CLI: cargo run -- device restore\n--target <device_ip>"]
-        L4_Impact["Impact: Re-enables all disabled\nAndroid packages to original state"]
+    subgraph L4_Detail["🔵 Level 4: Device & Smart TV Rollback"]
+        L4_When["⚡ When: Debloated TV/device package\ncauses unwanted UI side-effect"]
+        L4_Action1["🤖 Auto: sh backups/restore_ip_ts.sh"]
+        L4_Action2["💻 CLI: cargo run -- device restore\n--target device_ip"]
+        L4_Impact["✅ Impact: Re-enables all disabled\nAndroid packages to original state"]
     end
 
     %% Connections
@@ -308,12 +311,12 @@ graph TD
     L4 --> L4_Impact
 
     %% Styling
-    classDef hierarchy fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-    classDef level1 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    classDef level2 fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef level3 fill:#ffebee,stroke:#c62828,stroke-width:2px
-    classDef level4 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef manual fill:#fafafa,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+    classDef hierarchy fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#4a148c
+    classDef level1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef level2 fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef level3 fill:#ffebee,stroke:#b71c1c,stroke-width:2px,color:#7f0000
+    classDef level4 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef manual fill:#fafafa,stroke:#757575,stroke-width:1px,stroke-dasharray: 5 5,color:#424242
 
     class Rollback hierarchy
     class L1,L1_When,L1_Action,L1_Time,L1_Impact level1
@@ -326,52 +329,6 @@ graph TD
 ---
 
 **Architecture diagram also available as standalone file:** [`docs/architecture.mermaid`](docs/architecture.mermaid)
-
-<details>
-<summary>📋 Legacy ASCII Diagram (for reference)</summary>
-
-```text
-               ┌────────────────────────────────────────────────────────┐
-               │              Tier 0 Cloud Edge (GitHub Actions)        │
-               │  - Pre-compiles 29 Live Feeds (Ad/Scam/Thai/IoT/PC)    │
-               │  - Deduplicates 285,865+ domains & applies Whitelist   │
-               │  - Publishes daily to Tier 0 CDN (GitHub Pages)        │
-               └───────────────────────────┬────────────────────────────┘
-                                           │ Daily Pull (86400s)
-                                           ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│  Broadband Gateway / Router (ZTE, Huawei, ASUS, OpenWrt / ARMv7 / dnsmasq)             │
-│                                                                                        │
-│  ┌─────────────────────────┐     ┌──────────────────────────────────────────────────┐  │
-│  │    homeshield-daemon    │     │  iptables & ip6tables Anti-Bypass Rules          │  │
-│  │   - 408 kB VmRSS Rust   │────▶│  - IPv4: NAT REDIRECT UDP/TCP 53 -> dnsmasq      │  │
-│  │   - FNV-1a Flash Delta  │     │  - IPv6: FORWARD REJECT port 53 / 853 (Anti-DoT) │  │
-│  │   - 5s Self-Healing     │     └────────────────────────┬─────────────────────────┘  │
-│  └─────────────────────────┘                              │                            │
-│                                                           ▼                            │
-│                                          ┌──────────────────────────────────┐          │
-│                                          │  dnsmasq Dual-Stack Sinkhole     │          │
-│                                          │  - Blocks -> 0.0.0.0 & ::        │          │
-│                                          │  - Whitelist -> Forward to WAN   │
-│                                          └──────────────────────────────────┘          │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │
-               ┌────────────────────────────┴────────────────────────────┐
-               ▼                                                         ▼
-    ┌──────────────────────┐                                  ┌──────────────────────┐
-    │  Mobile & PC Clients │                                  │  Smart TV / Android  │
-    │  - iOS, Android, Mac │                                  │  - Sony, TCL, Mi TV  │
-    │  - Zero Configuration│                                  │  - Telemetry Blocked │
-    └──────────────────────┘                                  └──────────┬───────────┘
-                                                                         │
-                                 ┌───────────────────────────────────────┴───────────┐
-                                 │ CleanYourTV Companion (Workstation Python CLI)     │
-                                 │  - Zero-touch DHCP discovery                      │
-                                 │  - Debloats 1,100+ telemetry & ad packages        │
-                                 │  - Auto-creates backup & standalone rollback      │
-                                 └───────────────────────────────────────────────────┘
-```
-</details>
 
 ---
 
@@ -482,32 +439,30 @@ HomeShield delivers daily updates with zero downtime, minimal RAM (`408 kB`), an
 ```mermaid
 graph TD
     %% Tier 0 Cloud Automation
-    subgraph Tier0["Tier 0 Cloud Automation (Daily at 23:00 UTC / 06:00 ICT Bangkok)"]
-        GH["GitHub Actions"]
-        Pull["Pull 29 Feeds (JoinSet Concurrent)"]
-        Dedup["Deduplicate"]
-        CDN["CDN (hosts.txt)"]
+    subgraph Tier0["☁️ Tier 0 Cloud Automation — Daily at 23:00 UTC / 06:00 ICT Bangkok"]
+        GH["🤖 GitHub Actions"]
+        Pull["📥 Pull 29 Feeds\nJoinSet Concurrent"]
+        Dedup["🔄 Deduplicate\n285,865+ unique domains"]
+        CDN["🚀 CDN publish\nhosts.txt on GitHub Pages"]
+        GH --> Pull --> Dedup --> CDN
     end
-
-    GH --> Pull --> Dedup --> CDN
 
     %% Daily HTTP Pull
-    CDN -.->|Daily HTTP Pull (86400s)| Supervisor
+    CDN -.->|"⬇️ Daily HTTP Pull (86400s)"| Supervisor
 
     %% Broadband Gateway Supervisor
-    subgraph Supervisor["Broadband Gateway Supervisor (Rust Daemon — Design-Pattern Optimized)"]
-        Step1["Step 1: Builder + Flyweight\nPre-size HashSet (300k+) & Arc<Whitelist> (0 clone)"]
-        Step2["Step 2: Integrity & FNV-1a\n128 KB streaming buffer delta check -> Zero Flash"]
-        Step3["Step 3: Cache-Aside & Pool\nO(1) domain_count sidecar + reused String buffers"]
-        Step4["Step 4: Atomic Memory Swap\nSIGHUP to dnsmasq (<100 ms, zero dropped packets)"]
+    subgraph Supervisor["⚙️ Broadband Gateway Supervisor — Rust Daemon (Design-Pattern Optimized)"]
+        Step1["🏗️ Step 1: Builder + Flyweight\nPre-size HashSet 300k+ & Arc-Whitelist — 0 clone"]
+        Step2["🔐 Step 2: Integrity & FNV-1a\n128 KB streaming buffer delta check → Zero Flash Write"]
+        Step3["📊 Step 3: Cache-Aside & Pool\nO(1) domain_count sidecar + reused String buffers"]
+        Step4["⚡ Step 4: Atomic Memory Swap\nSIGHUP to dnsmasq — < 100 ms, zero dropped packets"]
+        Step1 --> Step2 --> Step3 --> Step4
     end
 
-    Step1 --> Step2 --> Step3 --> Step4
-
     %% Styling
-    classDef tier0 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    classDef supervisor fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef step fill:#f5f5f5,stroke:#757575,stroke-width:1px,stroke-dasharray: 5 5
+    classDef tier0 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef supervisor fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+    classDef step fill:#f5f5f5,stroke:#616161,stroke-width:1px,stroke-dasharray: 5 5,color:#212121
 
     class Tier0 tier0
     class Supervisor supervisor
@@ -516,26 +471,73 @@ graph TD
 
 **Update lifecycle diagram also available as standalone file:** [`docs/update-lifecycle.mermaid`](docs/update-lifecycle.mermaid)
 
-<details>
-<summary>📋 Legacy ASCII Diagram (for reference)</summary>
+---
 
-```text
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│  Tier 0 Cloud Automation (Daily at 23:00 UTC / 06:00 ICT Bangkok)                      │
-│  GitHub Actions -> Pull 29 Feeds (JoinSet Concurrent) -> Deduplicate -> CDN (hosts.txt)│
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │ Daily HTTP Pull (86400s)
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│  Broadband Gateway Supervisor (Rust Daemon — Design-Pattern Optimized)                 │
-│                                                                                        │
-│  [ Step 1: Builder + Flyweight ] ─▶ Pre-size HashSet (300k+) & Arc<Whitelist> (0 clone)│
-│  [ Step 2: Integrity & FNV-1a ] ──▶ 128 KB streaming buffer delta check -> Zero Flash   │
-│  [ Step 3: Cache-Aside & Pool ] ──▶ O(1) domain_count sidecar + reused String buffers   │
-│  [ Step 4: Atomic Memory Swap ] ──▶ SIGHUP to dnsmasq (<100 ms, zero dropped packets)   │
-└────────────────────────────────────────────────────────────────────────────────────────┘
+### Rollback Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant User as Administrator
+    participant CLI as homeshield.py / CLI
+    participant Router as Gateway Router
+    participant TV as Smart TV / Device
+
+    %% Level 1
+    User->>CLI: python3 homeshield.py toggle --ip 192.168.1.1
+    CLI->>Router: Atomic swap /var/tmp/hosts → empty
+    CLI->>Router: SIGHUP dnsmasq
+    Router-->>User: PAUSED (< 100 ms)
+
+    %% Level 2
+    User->>CLI: python3 homeshield.py deploy --engine shell
+    CLI->>Router: kill homeshield-daemon
+    CLI->>Router: Start adblock.sh loop + watchdog.sh
+    Router-->>User: Shell engine active (< 5 s)
+
+    %% Level 3 (CLI)
+    User->>CLI: python3 homeshield.py uninstall
+    CLI->>Router: Kill processes, flush iptables, restore hosts
+    CLI->>Router: rm -rf /userconfig/homeshield-*
+    Router-->>User: Factory state (< 30 s)
+
+    %% Level 3 (Manual Telnet)
+    User->>Router: telnet 192.168.1.1
+    User->>Router: killall + iptables -D + restore hosts + rm -rf
+    Router-->>User: Factory state
+
+    %% Level 4
+    User->>CLI: cargo run -- device restore --target 192.168.1.50
+    CLI->>TV: ADB: pm enable <packages...>
+    TV-->>User: All packages restored (< 10 s)
 ```
-</details>
+
+### Update Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub Actions
+    participant CDN as Tier 0 CDN (GitHub Pages)
+    participant Daemon as Rust Daemon (Router)
+    participant DNS as dnsmasq
+
+    GH->>GH: Pull 29 feeds concurrently (JoinSet)
+    GH->>GH: Deduplicate 285k+ domains
+    GH->>GH: Apply whitelist
+    GH->>CDN: Publish hosts.txt to GitHub Pages
+
+    Daemon->>CDN: Daily HTTP GET (86400s interval)
+    CDN-->>Daemon: hosts.txt + ETag/Last-Modified
+
+    alt Content unchanged (FNV-1a match)
+        Daemon->>Daemon: Skip Flash write, skip dnsmasq reload
+    else Content changed
+        Daemon->>Daemon: Builder + Flyweight (pre-size HashSet)
+        Daemon->>Daemon: Integrity check + FNV-1a streaming delta
+        Daemon->>Daemon: Cache-Aside + Pool (O(1) sidecar)
+        Daemon->>Daemon: Atomic memory swap to /var/tmp/hosts
+        Daemon->>DNS: SIGHUP (reload < 100 ms, zero dropped packets)
+    end
+```
 
 #### How to Trigger an Update Manually:
 ```bash
@@ -652,7 +654,7 @@ Please review our [Contributing Guidelines](CONTRIBUTING.md) and [Security Polic
 ## 🧪 Adblock TurtleCute Site Status
 
 - **Apex domain** `https://adblock.turtlecute.org/` resolves correctly (HTTP 200) via GitHub Pages.
-- **WWW sub‑domain** `https://adblock.turtlecute.org/` has no DNS record, resulting in `ERR_NAME_NOT_RESOLVED`.
-- Findings are documented in the [Investigation Report](adblock_turtlecute_investigation.md).
+- **WWW sub‑domain** `https://www.adblock.turtlecute.org/` has no DNS record, resulting in `ERR_NAME_NOT_RESOLVED`.
+- Findings are documented in the investigation notes in this section above.
 
 These updates reflect the current accessibility of the TurtleCute test suite used in the verification steps.

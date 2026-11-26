@@ -53,3 +53,6 @@ www.msftconnecttest.com
 recaptcha.net
 hcaptcha.com
 challenges.cloudflare.com
+
+# Adblock Verification & Diagnostic Tools
+adblock.turtlecute.org

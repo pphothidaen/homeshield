@@ -6,23 +6,48 @@
 
 ## 📚 Documentation Map
 
-```
-homeshield/
-├── README.md                      ← Project overview, features, quick start
-├── CHANGELOG.md                   ← Version history (semver)
-├── CONTRIBUTING.md                ← Contribution guidelines
-├── PRIVACY.md                     ← Privacy policy
-├── SECURITY.md                    ← Security disclosure policy
-├── docs/
-│   ├── PLAYBOOK.md                ← Ops runbook: deploy, toggle, incident response, rollback
-│   ├── architecture.mermaid         ← Architecture diagram (Mermaid graph TD)
-│   ├── architecture-mermaid-legacy.mermarkdown ← Legacy ASCII → Mermaid conversion
-│   ├── rollback-hierarchy.mermaid ← Rollback hierarchy & verification checklist
-│   └── update-lifecycle.mermaid   ← Update lifecycle & design patterns
-│   └── APPENDIX.md                ← This file: documentation index
-└── config/
-    ├── adblock.conf               ← Router engine configuration (source of truth for URLs)
-    └── whitelist.txt              ← Thai infrastructure & connectivity whitelist
+```mermaid
+flowchart LR
+    Root["🏠 homeshield/\nProject Root"]
+
+    subgraph CoreDocs["📘 Core Documentation"]
+        direction TB
+        Readme["📄 README.md\nOverview · Features · Quick Start"]
+        Changelog["📋 CHANGELOG.md\nVersion History (SemVer)"]
+        Contributing["🤝 CONTRIBUTING.md\nContribution Guidelines"]
+        Privacy["🔒 PRIVACY.md\nPrivacy Policy"]
+        Security["🛡️ SECURITY.md\nSecurity Disclosure Policy"]
+    end
+
+    subgraph DocsDir["📚 docs/ — Runbooks & Diagrams"]
+        direction TB
+        Playbook["📖 PLAYBOOK.md\nDeploy · Toggle · Incident · Rollback"]
+        Arch["🏛️ architecture.mermaid\nZero-Hop Edge Architecture"]
+        Rollback["🔄 rollback-hierarchy.mermaid\n4-Tier Rollback & Checklist"]
+        Lifecycle["⚡ update-lifecycle.mermaid\nDaily Sync & Design Patterns"]
+        Appendix["🗂️ APPENDIX.md\nDocumentation Index (This File)"]
+    end
+
+    subgraph ConfigDir["⚙️ config/ — Router Configuration"]
+        direction TB
+        AdblockConf["🛡️ adblock.conf\nSource of Truth (29 Live Feeds)"]
+        WhitelistTxt["✅ whitelist.txt\nThai Infra & NCSI Whitelist"]
+    end
+
+    Root --> CoreDocs
+    Root --> DocsDir
+    Root --> ConfigDir
+
+    %% Unified Theme Styling
+    classDef root fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#4a148c
+    classDef core fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#0d47a1
+    classDef docs fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#4a148c
+    classDef cfg fill:#fff8e1,stroke:#f57f17,stroke-width:2px,color:#e65100
+
+    class Root root
+    class CoreDocs,Readme,Changelog,Contributing,Privacy,Security core
+    class DocsDir,Playbook,Arch,Rollback,Lifecycle,Appendix docs
+    class ConfigDir,AdblockConf,WhitelistTxt cfg
 ```
 
 ---
@@ -38,7 +63,7 @@ homeshield/
 | [SECURITY.md](../SECURITY.md) | Vulnerability disclosure process | Security researchers |
 | [docs/PLAYBOOK.md](PLAYBOOK.md) | Day-to-day operations: deploy, toggle, rollback | Operators |
 | [docs/APPENDIX.md](APPENDIX.md) | This index | Everyone |
-| [docs/architecture-mermaid-legacy.mermarkdown](architecture-mermaid-legacy.mermarkdown) | Legacy ASCII → Mermaid conversion reference | Everyone |
+| ~~[docs/architecture-mermaid-legacy.mermarkdown](architecture-mermaid-legacy.mermarkdown)~~ *(deleted)* | Legacy ASCII → Mermaid conversion reference *(removed)* | Everyone |
 
 ---
 
